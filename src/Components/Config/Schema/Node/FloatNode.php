@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Components\Config\Schema\Node;
+
+use App\Components\Config\Exception\InvalidNodeTypeException;
+
+class FloatNode extends NumericNode
+{
+    public function validateType(mixed $value): void
+    {
+        if (!is_float($value)) {
+            throw new InvalidNodeTypeException(sprintf(
+                'The node "%s" must be of type "float", "%s" given',
+                $this->getKey(),
+                get_debug_type($value)
+            ));
+        }
+    }
+}

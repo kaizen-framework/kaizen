@@ -1,0 +1,32 @@
+name: Separate the components of the monorepo into individual GitHub repositories
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  components-split:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # define package to repository map
+        package:
+          -
+            local_path: 'Components/Config'
+            split_repository: 'config'
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: danharrin/monorepo-split-github-action@v2.3.0
+        with:
+          package_directory: 'src/${{ matrix.package.local_path }}'
+          repository_organization: 'kaizen-framework'
+          repository_name: '${{ matrix.package.split_repository }}'
+          user_name: 'niko-38500'
+          user_email: 'nicolas.montmayeur@hotmail.fr'
