@@ -1,0 +1,18 @@
+name: setup
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Start docker containers
+      id: start-docker
+      shell: sh
+      run: docker compose up --build -d
+
+    - name: Cache Composer packages
+      uses: actions/cache@v4
+      with:
+        path: ./vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-

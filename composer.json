@@ -1,0 +1,12 @@
+{
+    "name": "kaizen-framework/kaizen",
+    "description": "Kaizen is a custom PHP framework designed to promote best practices in software architecture. It is specifically crafted to leverage hexagonal architecture, enabling developers to build robust and maintainable applications with ease.",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "rector/rector": "^1.2",
+        "symplify/monorepo-builder": "^11.2",
+        "phpstan/phpstan": "^1.12",
+        "friendsofphp/php-cs-fixer": "^3.64"
+    }
+}

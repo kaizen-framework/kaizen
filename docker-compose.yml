@@ -1,0 +1,8 @@
+services:
+  php:
+    container_name: php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - .:/srv/app

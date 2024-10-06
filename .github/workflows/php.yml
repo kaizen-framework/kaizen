@@ -1,0 +1,62 @@
+name: Build the app and run the QAs
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  DOCKER_EXEC: docker exec php
+
+jobs:
+  build:
+    name: Install dependencies and cache directories
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: "./.github/shared/setup"
+
+      - name: Install dependencies
+        id: install-deps
+        run: $DOCKER_EXEC composer install --prefer-dist --no-progress
+
+      - name: Validate composer.json and composer.lock
+        if: steps.install-deps.outcome == 'success'
+        run: $DOCKER_EXEC composer validate --strict
+
+      - name: Rector Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/rector
+          key: ${{ runner.os }}-rector-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-rector-
+
+      - run: mkdir -p /tmp/rector
+
+  quality-analyse:
+    name: Run the QA of the application
+
+    needs:
+      - build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: "./.github/shared/setup"
+
+      - name: Run phpstan static analysis
+        run: $DOCKER_EXEC ./vendor/bin/phpstan analyse src --configuration phpstan.neon
+
+      - name: Run php coding standard fixer (cs fixer)
+        run: $DOCKER_EXEC ./vendor/bin/php-cs-fixer fix --diff --dry-run --config .php-cs-fixer.dist.php
+
+      - name: Run rector
+        run: $DOCKER_EXEC ./vendor/bin/rector process --dry-run --config=rector.php
+
+      # TODO add tests suite running
+
+
