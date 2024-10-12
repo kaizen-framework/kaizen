@@ -10,26 +10,26 @@ use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 
 class ObjectVariableNodeBuilder
 {
-    private ?ConfigPrototypeInterface $prototype = null;
+    private ?ConfigPrototypeInterface $configPrototype = null;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $parent
+        private readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
-    public function withPrototype(ConfigPrototypeInterface $prototype): self
+    public function withPrototype(ConfigPrototypeInterface $configPrototype): self
     {
-        $this->prototype = $prototype;
+        $this->configPrototype = $configPrototype;
 
         return $this;
     }
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new ObjectVariableNode($this->key, $this->prototype);
+        $objectVariableNode = new ObjectVariableNode($this->key, $this->configPrototype);
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($objectVariableNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }

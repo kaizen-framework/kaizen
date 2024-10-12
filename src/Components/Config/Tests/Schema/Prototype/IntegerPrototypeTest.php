@@ -19,16 +19,16 @@ class IntegerPrototypeTest extends TestCase
     {
         self::expectNotToPerformAssertions();
 
-        $scalarPrototype = new IntegerPrototype();
-        $scalarPrototype->validatePrototype([123, 12]);
+        $integerPrototype = new IntegerPrototype();
+        $integerPrototype->validatePrototype([123, 12]);
     }
 
     public function testValidateWithArrayNode(): void
     {
         self::expectNotToPerformAssertions();
 
-        $scalarPrototype = new ArrayNode('node', new IntegerPrototype());
-        $scalarPrototype->validateType([123, 12]);
+        $arrayNode = new ArrayNode('node', new IntegerPrototype());
+        $arrayNode->validateType([123, 12]);
     }
 
     public static function invalidIntegerArrayValueProvider(): \Iterator
@@ -48,10 +48,10 @@ class IntegerPrototypeTest extends TestCase
     #[DataProvider('invalidIntegerArrayValueProvider')]
     public function testIntegerException(array $value): void
     {
-        $scalarPrototype = new IntegerPrototype();
+        $integerPrototype = new IntegerPrototype();
 
         self::expectException(InvalidNodeTypeException::class);
-        $scalarPrototype->validatePrototype($value);
+        $integerPrototype->validatePrototype($value);
     }
 
     #[DataProvider('invalidIntegerArrayValueProvider')]

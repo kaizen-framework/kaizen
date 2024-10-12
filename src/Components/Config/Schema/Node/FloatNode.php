@@ -8,6 +8,7 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
 class FloatNode extends NumericNode
 {
+    #[\Override]
     public function validateType(mixed $value): void
     {
         if (!is_float($value)) {

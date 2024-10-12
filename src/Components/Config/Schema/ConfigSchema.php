@@ -17,19 +17,19 @@ class ConfigSchema
      * @throws InvalidSchemaException
      */
     public function __construct(
-        Node ...$schema
+        Node ...$node
     ) {
-        $this->schema = $schema;
+        $this->schema = $node;
 
         $this->validateSchema();
     }
 
     public function getNode(string $key): ?NodeInterface
     {
-        $node = current(array_filter($this->schema, static fn (NodeInterface $node) => $node->getKey() === $key));
+        $node = current(array_filter($this->schema, static fn (NodeInterface $node): bool => $node->getKey() === $key));
 
         if (!$node) {
-            $node = current(array_filter($this->schema, static fn (NodeInterface $node) => '*' === $node->getKey()));
+            $node = current(array_filter($this->schema, static fn (NodeInterface $node): bool => '*' === $node->getKey()));
         }
 
         return $node ?: null;
@@ -40,7 +40,7 @@ class ConfigSchema
      */
     public function getNodeKeys(): array
     {
-        return array_map(static fn (NodeInterface $child) => $child->getKey(), $this->schema);
+        return array_map(static fn (NodeInterface $node): string => $node->getKey(), $this->schema);
     }
 
     /**
@@ -66,7 +66,7 @@ class ConfigSchema
      */
     private function checkForDuplicatedKeys(): void
     {
-        $keys = array_map(static fn (NodeInterface $node) => $node->getKey(), $this->schema);
+        $keys = array_map(static fn (NodeInterface $node): string => $node->getKey(), $this->schema);
 
         if (count($keys) !== count($uniqueKeys = array_unique($keys))) {
             throw new InvalidSchemaException(sprintf(

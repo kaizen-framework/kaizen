@@ -17,11 +17,11 @@ class ArrayNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new ArrayNode('array');
+        $arrayNode = new ArrayNode('array');
 
-        $node->validateType(['string', 123, true]);
+        $arrayNode->validateType(['string', 123, true]);
 
-        self::assertEquals('array', $node->getKey());
+        $this->assertSame('array', $arrayNode->getKey());
     }
 
     public static function invalidValuesProvider(): \Iterator
@@ -38,10 +38,10 @@ class ArrayNodeTest extends TestCase
     #[DataProvider('invalidValuesProvider')]
     public function testWithInvalidValue(mixed $value): void
     {
-        $node = new ArrayNode('array');
+        $arrayNode = new ArrayNode('array');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $arrayNode->validateType($value);
     }
 
     public function testPrototypeValidateIsCalled(): void
@@ -56,7 +56,7 @@ class ArrayNodeTest extends TestCase
             ->with($value)
         ;
 
-        $node = new ArrayNode('array', $prototypeMock);
-        $node->validateType($value);
+        $arrayNode = new ArrayNode('array', $prototypeMock);
+        $arrayNode->validateType($value);
     }
 }

@@ -26,9 +26,9 @@ class ConfigSchemaBuilderTest extends TestCase
 {
     public function testBuild(): void
     {
-        $builder = new ConfigSchemaBuilder();
+        $configSchemaBuilder = new ConfigSchemaBuilder();
 
-        $configSchema = $builder
+        $configSchema = $configSchemaBuilder
             ->integer('int')
             ->min(1)
             ->max(100)
@@ -58,28 +58,28 @@ class ConfigSchemaBuilderTest extends TestCase
             ->build()
         ;
 
-        self::assertInstanceOf(ConfigSchema::class, $configSchema);
+        $this->assertInstanceOf(ConfigSchema::class, $configSchema);
 
         $integerNode = $configSchema->getNode('int');
-        self::assertInstanceOf(IntegerNode::class, $integerNode);
-        self::assertEquals(1, $integerNode->getMin());
+        $this->assertInstanceOf(IntegerNode::class, $integerNode);
+        $this->assertSame(1, $integerNode->getMin());
 
         $floatNode = $configSchema->getNode('float');
-        self::assertInstanceOf(FloatNode::class, $floatNode);
-        self::assertEquals(0.1, $floatNode->getMin());
-        self::assertEquals(10.20, $floatNode->getMax());
+        $this->assertInstanceOf(FloatNode::class, $floatNode);
+        $this->assertEqualsWithDelta(0.1, $floatNode->getMin(), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(10.20, $floatNode->getMax(), PHP_FLOAT_EPSILON);
 
         $stringNode = $configSchema->getNode('string');
-        self::assertInstanceOf(StringNode::class, $stringNode);
-        self::assertTrue($stringNode->isRequired());
-        self::assertEquals('default_string', $stringNode->getDefaultValue());
+        $this->assertInstanceOf(StringNode::class, $stringNode);
+        $this->assertTrue($stringNode->isRequired());
+        $this->assertSame('default_string', $stringNode->getDefaultValue());
 
         $objectNode = $configSchema->getNode('object');
-        self::assertInstanceOf(ObjectNode::class, $objectNode);
+        $this->assertInstanceOf(ObjectNode::class, $objectNode);
         $childClasses = array_map(
-            static fn (NodeInterface $node) => $node::class,
+            static fn (NodeInterface $node): string => $node::class,
             $objectNode->getChildren()->getNodes()
         );
-        self::assertEquals([ScalarNode::class, BooleanNode::class], $childClasses);
+        $this->assertSame([ScalarNode::class, BooleanNode::class], $childClasses);
     }
 }

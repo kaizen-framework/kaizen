@@ -32,7 +32,7 @@ class ConfigProcessorTest extends TestCase
             'node' => 'test',
         ];
 
-        $schema = new ConfigSchema(
+        $configSchema = new ConfigSchema(
             (new StringNode('node'))->defaultValue('default'),
             (new ScalarNode('node2'))->defaultValue('default_value')
         );
@@ -40,15 +40,15 @@ class ConfigProcessorTest extends TestCase
         $configInterface = $this->createMock(ConfigInterface::class);
         $configInterface->expects($this->once())
             ->method('getConfigSchema')
-            ->willReturn($schema)
+            ->willReturn($configSchema)
         ;
 
         $configProcessor = new ConfigProcessor();
 
         $configProcessor->processConfig($config, $configInterface);
 
-        self::assertEquals('test', $config['node']);
-        self::assertEquals('default_value', $config['node2']);
+        $this->assertSame('test', $config['node']);
+        $this->assertSame('default_value', $config['node2']);
     }
 
     public function testNodeProcessValueIsCalled(): void

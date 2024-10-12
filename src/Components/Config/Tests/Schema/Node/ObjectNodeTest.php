@@ -25,7 +25,7 @@ class ObjectNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new ObjectNode(
+        $objectNode = new ObjectNode(
             'object',
             new ConfigSchema(
                 new ArrayNode('tuple_array', new TuplePrototype(
@@ -41,7 +41,7 @@ class ObjectNodeTest extends TestCase
             )
         );
 
-        $node->validateType([
+        $objectNode->validateType([
             'tuple_array' => ['string', 123, true],
             'object_array' => [
                 ['sub_object_array' => 'string'],
@@ -50,7 +50,7 @@ class ObjectNodeTest extends TestCase
             'int' => 123,
         ]);
 
-        self::assertEquals('object', $node->getKey());
+        $this->assertSame('object', $objectNode->getKey());
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -107,7 +107,7 @@ class ObjectNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(array $value): void
     {
-        $node = new ObjectNode('object', new ConfigSchema(
+        $objectNode = new ObjectNode('object', new ConfigSchema(
             new ArrayNode('tuple_array', new TuplePrototype(
                 TupleTypesEnum::SCALAR,
                 TupleTypesEnum::INTEGER,
@@ -121,6 +121,6 @@ class ObjectNodeTest extends TestCase
         ));
 
         self::expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $objectNode->validateType($value);
     }
 }

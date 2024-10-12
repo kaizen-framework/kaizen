@@ -10,9 +10,10 @@ class ArrayNode extends Node
 {
     public function __construct(
         private readonly string $key,
-        private readonly ?ConfigPrototypeInterface $arrayPrototype = null,
+        private readonly ?ConfigPrototypeInterface $configPrototype = null,
     ) {}
 
+    #[\Override]
     public function validateType(mixed $value): void
     {
         if (!is_array($value)) {
@@ -23,7 +24,7 @@ class ArrayNode extends Node
             ));
         }
 
-        $this->arrayPrototype?->validatePrototype($value);
+        $this->configPrototype?->validatePrototype($value);
     }
 
     /**
@@ -37,13 +38,14 @@ class ArrayNode extends Node
         /** @var array<int, mixed> $value */
         $value = parent::processValue($value);
 
-        if (!$this->arrayPrototype) {
+        if (!$this->configPrototype) {
             return $value;
         }
 
-        return $this->arrayPrototype->processPrototype($value);
+        return $this->configPrototype->processPrototype($value);
     }
 
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;

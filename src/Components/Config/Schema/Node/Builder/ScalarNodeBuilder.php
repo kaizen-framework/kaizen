@@ -10,11 +10,12 @@ use Kaizen\Components\Config\Schema\Node\ScalarNode;
 class ScalarNodeBuilder
 {
     protected bool $isRequired = false;
+
     protected null|bool|float|int|string $defaultValue = null;
 
     public function __construct(
         protected readonly string $key,
-        protected readonly ConfigSchemaBuilder $parent
+        protected readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function required(): self
@@ -33,18 +34,18 @@ class ScalarNodeBuilder
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new ScalarNode($this->key);
+        $scalarNode = new ScalarNode($this->key);
 
         if (null !== $this->defaultValue) {
-            $node->defaultValue($this->defaultValue);
+            $scalarNode->defaultValue($this->defaultValue);
         }
 
         if ($this->isRequired) {
-            $node->required();
+            $scalarNode->required();
         }
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($scalarNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }

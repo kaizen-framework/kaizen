@@ -10,9 +10,9 @@ class TuplePrototype extends AbstractPrototype
     private array $types;
 
     public function __construct(
-        TupleTypesEnum ...$types
+        TupleTypesEnum ...$tupleTypesEnum
     ) {
-        $this->types = $types;
+        $this->types = $tupleTypesEnum;
     }
 
     /**
@@ -20,6 +20,7 @@ class TuplePrototype extends AbstractPrototype
      *
      * @throws InvalidNodeTypeException
      */
+    #[\Override]
     public function validatePrototype(array $array): void
     {
         if (count($array) !== count($this->types)) {

@@ -11,9 +11,10 @@ class ObjectNode extends Node implements ParentNodeInterface
 {
     public function __construct(
         private readonly string $key,
-        private readonly ?ConfigSchema $children = null,
+        private readonly ?ConfigSchema $configSchema = null,
     ) {}
 
+    #[\Override]
     public function validateType(mixed $value): void
     {
         if (!is_array($value)) {
@@ -24,19 +25,19 @@ class ObjectNode extends Node implements ParentNodeInterface
             ));
         }
 
-        if (!$this->children) {
+        if (!$this->configSchema) {
             return;
         }
 
         foreach ($value as $key => $currentValue) {
-            $node = $this->children->getNode($key);
+            $node = $this->configSchema->getNode($key);
 
             if (!$node) {
                 throw new InvalidNodeTypeException(sprintf(
                     'key %s not allowed within the %s node, allowed keys : %s',
                     $key,
                     $this->getKey(),
-                    implode(', ', $this->children->getNodeKeys())
+                    implode(', ', $this->configSchema->getNodeKeys())
                 ));
             }
 
@@ -44,20 +45,22 @@ class ObjectNode extends Node implements ParentNodeInterface
         }
     }
 
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;
     }
 
+    #[\Override]
     public function getChildren(): ConfigSchema
     {
-        if (null === $this->children) {
+        if (null === $this->configSchema) {
             throw new \RuntimeException(sprintf(
                 'Can not call "%s::getChildren()" no children',
                 self::class
             ));
         }
 
-        return $this->children;
+        return $this->configSchema;
     }
 }

@@ -17,19 +17,19 @@ class IntegerNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new IntegerNode('integer');
-        $node->validateType(123);
+        $integerNode = new IntegerNode('integer');
+        $integerNode->validateType(123);
 
-        self::assertEquals('integer', $node->getKey());
+        $this->assertSame('integer', $integerNode->getKey());
     }
 
     public function testProcessValue(): void
     {
-        $node = new IntegerNode('int');
-        $node->min(10);
+        $integerNode = new IntegerNode('int');
+        $integerNode->min(10);
 
         self::expectException(ConfigProcessingException::class);
-        $node->processValue(1);
+        $integerNode->processValue(1);
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -48,9 +48,9 @@ class IntegerNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
-        $node = new IntegerNode('integer');
+        $integerNode = new IntegerNode('integer');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $integerNode->validateType($value);
     }
 }

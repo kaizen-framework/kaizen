@@ -17,19 +17,19 @@ class FloatNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new FloatNode('float');
-        $node->validateType(12.3);
+        $floatNode = new FloatNode('float');
+        $floatNode->validateType(12.3);
 
-        self::assertEquals('float', $node->getKey());
+        $this->assertSame('float', $floatNode->getKey());
     }
 
     public function testProcessValue(): void
     {
-        $node = new FloatNode('float');
-        $node->min(10.5);
+        $floatNode = new FloatNode('float');
+        $floatNode->min(10.5);
 
         self::expectException(ConfigProcessingException::class);
-        $node->processValue(1.3);
+        $floatNode->processValue(1.3);
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -48,9 +48,9 @@ class FloatNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
-        $node = new FloatNode('float');
+        $floatNode = new FloatNode('float');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $floatNode->validateType($value);
     }
 }

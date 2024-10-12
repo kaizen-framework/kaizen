@@ -17,12 +17,12 @@ class NumericNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new NumericNode('numeric');
+        $numericNode = new NumericNode('numeric');
 
-        $node->validateType(12.3);
-        $node->validateType(12);
+        $numericNode->validateType(12.3);
+        $numericNode->validateType(12);
 
-        self::assertEquals('numeric', $node->getKey());
+        $this->assertSame('numeric', $numericNode->getKey());
     }
 
     public static function invalidNumericValueProvider(): \Iterator
@@ -47,12 +47,12 @@ class NumericNodeTest extends TestCase
     #[DataProvider('invalidNumericValueProvider')]
     public function testProcessValue(float|int $min, float|int $max, float|int $actualValue): void
     {
-        $node = new NumericNode('numeric');
-        $node->min($min)->max($max);
+        $numericNode = new NumericNode('numeric');
+        $numericNode->min($min)->max($max);
 
         self::expectException(ConfigProcessingException::class);
 
-        $node->processValue($actualValue);
+        $numericNode->processValue($actualValue);
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -69,9 +69,9 @@ class NumericNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
-        $node = new NumericNode('numeric');
+        $numericNode = new NumericNode('numeric');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $numericNode->validateType($value);
     }
 }

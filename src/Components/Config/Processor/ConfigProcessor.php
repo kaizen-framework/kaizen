@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Processor;
 
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
 use Kaizen\Components\Config\ConfigInterface;
 use Kaizen\Components\Config\Exception\ConfigProcessingException;
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
@@ -22,9 +23,9 @@ class ConfigProcessor
      */
     public function processConfig(array &$config, ConfigInterface $configInterface): void
     {
-        $schema = $configInterface->getConfigSchema();
+        $configSchema = $configInterface->getConfigSchema();
 
-        $config = $this->doProcess($config, $schema);
+        $config = $this->doProcess($config, $configSchema);
     }
 
     /**
@@ -36,15 +37,15 @@ class ConfigProcessor
      * @throws NodeNotFoundException
      * @throws ConfigProcessingException
      */
-    private function doProcess(array $config, ConfigSchema $schema): array
+    private function doProcess(array $config, ConfigSchema $configSchema): array
     {
-        $this->assertRequiredNodeArePresent($schema, $config);
-        $this->appendDefaultValueForMissingNodes($config, $schema);
+        $this->assertRequiredNodeArePresent($configSchema, $config);
+        $this->appendDefaultValueForMissingNodes($config, $configSchema);
 
         foreach ($config as $key => $value) {
-            $node = $schema->getNode($key);
+            $node = $configSchema->getNode($key);
 
-            if (!$node) {
+            if (!$node instanceof NodeInterface) {
                 throw new NodeNotFoundException($key);
             }
 
@@ -64,9 +65,9 @@ class ConfigProcessor
     /**
      * @param array<string, mixed> $config
      */
-    private function appendDefaultValueForMissingNodes(array &$config, ConfigSchema $schema): void
+    private function appendDefaultValueForMissingNodes(array &$config, ConfigSchema $configSchema): void
     {
-        foreach ($schema->getNodes() as $node) {
+        foreach ($configSchema->getNodes() as $node) {
             if (!array_key_exists($node->getKey(), $config) && null !== $defaultValue = $node->getDefaultValue()) {
                 $config[$node->getKey()] = $defaultValue;
             }
@@ -78,9 +79,9 @@ class ConfigProcessor
      *
      * @throws ConfigProcessingException
      */
-    private function assertRequiredNodeArePresent(ConfigSchema $schema, array $config): void
+    private function assertRequiredNodeArePresent(ConfigSchema $configSchema, array $config): void
     {
-        foreach ($schema->getNodes() as $node) {
+        foreach ($configSchema->getNodes() as $node) {
             if ($node->isRequired() && !array_key_exists($node->getKey(), $config)) {
                 throw new ConfigProcessingException(sprintf(
                     'Required config parameter "%s" is missing.',

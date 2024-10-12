@@ -10,11 +10,12 @@ use Kaizen\Components\Config\Schema\Node\BooleanNode;
 class BooleanNodeBuilder
 {
     private ?bool $defaultValue = null;
+
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $parent
+        private readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function required(): self
@@ -33,18 +34,18 @@ class BooleanNodeBuilder
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new BooleanNode($this->key);
+        $booleanNode = new BooleanNode($this->key);
 
         if ($this->isRequired) {
-            $node->required();
+            $booleanNode->required();
         }
 
         if (!is_null($this->defaultValue)) {
-            $node->defaultValue($this->defaultValue);
+            $booleanNode->defaultValue($this->defaultValue);
         }
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($booleanNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }

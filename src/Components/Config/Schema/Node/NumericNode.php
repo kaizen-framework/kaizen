@@ -10,12 +10,14 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 class NumericNode extends Node
 {
     private float|int $min;
+
     private float|int $max;
 
     public function __construct(
         public readonly string $key,
     ) {}
 
+    #[\Override]
     public function validateType(mixed $value): void
     {
         if (!is_float($value) && !is_int($value)) {
@@ -27,6 +29,7 @@ class NumericNode extends Node
         }
     }
 
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;
@@ -59,6 +62,7 @@ class NumericNode extends Node
     /**
      * @throws ConfigProcessingException
      */
+    #[\Override]
     public function processValue(mixed $value): mixed
     {
         /** @var float|int $value */

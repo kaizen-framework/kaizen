@@ -28,10 +28,10 @@ class ScalarNodeTest extends TestCase
     #[DataProvider('validValueProvider')]
     public function testValidateType(): void
     {
-        $node = new ScalarNode('scalar');
-        $node->validateType(true);
+        $scalarNode = new ScalarNode('scalar');
+        $scalarNode->validateType(true);
 
-        self::assertEquals('scalar', $node->getKey());
+        $this->assertSame('scalar', $scalarNode->getKey());
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -44,9 +44,9 @@ class ScalarNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
-        $node = new ScalarNode('scalar');
+        $scalarNode = new ScalarNode('scalar');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $scalarNode->validateType($value);
     }
 }

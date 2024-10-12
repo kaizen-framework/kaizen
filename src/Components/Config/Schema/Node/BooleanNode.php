@@ -10,6 +10,7 @@ class BooleanNode extends Node
         private readonly string $key,
     ) {}
 
+    #[\Override]
     public function validateType(mixed $value): void
     {
         if (!is_bool($value)) {
@@ -21,6 +22,7 @@ class BooleanNode extends Node
         }
     }
 
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;

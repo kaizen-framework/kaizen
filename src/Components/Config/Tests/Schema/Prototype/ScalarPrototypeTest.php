@@ -27,8 +27,8 @@ class ScalarPrototypeTest extends TestCase
     {
         self::expectNotToPerformAssertions();
 
-        $scalarPrototype = new ArrayNode('node', new ScalarPrototype());
-        $scalarPrototype->validateType([123, 12.3, true, 'string']);
+        $arrayNode = new ArrayNode('node', new ScalarPrototype());
+        $arrayNode->validateType([123, 12.3, true, 'string']);
     }
 
     public static function invalidScalarArrayValueProvider(): \Iterator

@@ -55,7 +55,7 @@ readonly class ConfigLocator
             }
         }
 
-        if (empty($parsers)) {
+        if ($parsers === []) {
             throw new ParsingException(sprintf(
                 'None of the parsers provided are able to support the "%s" file',
                 $filePath
@@ -66,7 +66,7 @@ readonly class ConfigLocator
             throw new ParsingException(sprintf(
                 'More than one parser can support "%s" file, conflict parsers : "%s"',
                 $filePath,
-                implode(', ', array_map(static fn (ParserInterface $parser) => $parser::class, $parsers))
+                implode(', ', array_map(static fn (ParserInterface $parser): string => $parser::class, $parsers))
             ));
         }
 

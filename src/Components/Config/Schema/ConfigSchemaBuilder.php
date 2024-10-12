@@ -72,16 +72,16 @@ class ConfigSchemaBuilder
 
     public function buildChildNode(): self
     {
-        $schema = new ConfigSchema(...$this->nodes);
+        $configSchema = new ConfigSchema(...$this->nodes);
 
-        if (!$this->parent || !$this->key) {
+        if (null === $this->parent || null === $this->key) {
             throw new \LogicException(sprintf(
                 'method "%s::buildChildNode()" can not be called outside a child node.',
                 self::class
             ));
         }
 
-        $this->parent->add(new ObjectNode($this->key, $schema));
+        $this->parent->add(new ObjectNode($this->key, $configSchema));
 
         return $this->parent;
     }
@@ -91,15 +91,15 @@ class ConfigSchemaBuilder
      */
     public function build(): ConfigSchema
     {
-        $schema = new ConfigSchema(...$this->nodes);
+        $configSchema = new ConfigSchema(...$this->nodes);
 
-        if ($this->parent && $this->key) {
+        if (null !== $this->parent && null !== $this->key) {
             throw new \LogicException(sprintf(
                 'method "%s::build()" can not be called for the root node.',
                 self::class
             ));
         }
 
-        return $schema;
+        return $configSchema;
     }
 }

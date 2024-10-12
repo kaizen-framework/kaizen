@@ -9,6 +9,7 @@ use Kaizen\Components\Config\Exception\ParsingException;
 
 class YamlParser implements ParserInterface
 {
+    #[\Override]
     public function parse(string $fileContent): array
     {
         /** @var array<string, mixed>|false $yaml */
@@ -29,6 +30,7 @@ class YamlParser implements ParserInterface
         return $yaml;
     }
 
+    #[\Override]
     public function supports(string $path): bool
     {
         return file_exists($path) && in_array(pathinfo($path, PATHINFO_EXTENSION), ['yml', 'yaml']);
@@ -39,7 +41,7 @@ class YamlParser implements ParserInterface
      *
      * @throws ParsingException
      */
-    private function parseTags(string $value, string $tag, string $flag): null|array|bool|float|int|string
+    private function parseTags(string $value, string $tag): null|array|bool|float|int|string
     {
         [0 => $class, 1 => $constant] = explode('::', $value);
 
@@ -54,12 +56,7 @@ class YamlParser implements ParserInterface
 
             /** @phpstan-ignore-next-line All checks are already performed so it will not throw error */
             $constValue = constant($value)->value;
-        }
-
-        if (
-            !isset($constValue)
-            && (class_exists($class) || interface_exists($class))
-        ) {
+        } elseif (class_exists($class) || interface_exists($class)) {
             if (!defined($value)) {
                 throw new ParsingException(sprintf(
                     'Constant "%s" does not exist in class "%s".',
@@ -69,9 +66,7 @@ class YamlParser implements ParserInterface
             }
 
             $constValue = constant($value);
-        }
-
-        if (!isset($constValue)) {
+        } else {
             throw new ParsingException(sprintf(
                 'Class, enum or interface "%s" does not exist, for the tag "%s" with value "%s"',
                 $class,
@@ -80,7 +75,7 @@ class YamlParser implements ParserInterface
             ));
         }
 
-        if (!in_array(gettype($constValue), ['string', 'int', 'float', 'bool', 'null', 'array', 'NULL'])) {
+        if (!in_array(gettype($constValue), ['string', 'int', 'float', 'bool', 'null', 'array', 'NULL'], true)) {
             throw new ParsingException(sprintf(
                 'Constant "%s" does not have a proper type',
                 $value

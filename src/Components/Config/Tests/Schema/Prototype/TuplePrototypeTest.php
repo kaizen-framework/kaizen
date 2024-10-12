@@ -35,13 +35,13 @@ class TuplePrototypeTest extends TestCase
     {
         self::expectNotToPerformAssertions();
 
-        $tupleNode = new ArrayNode('tuple', new TuplePrototype(
+        $arrayNode = new ArrayNode('tuple', new TuplePrototype(
             TupleTypesEnum::STRING,
             TupleTypesEnum::INTEGER,
             TupleTypesEnum::BOOLEAN
         ));
 
-        $tupleNode->validateType(['string', 123, true]);
+        $arrayNode->validateType(['string', 123, true]);
     }
 
     public static function invalidTupleValueProvider(): \Iterator
@@ -80,13 +80,13 @@ class TuplePrototypeTest extends TestCase
     #[DataProvider('invalidTupleValueProvider')]
     public function testTupleExceptionWithArrayNode(mixed $value): void
     {
-        $tupleNode = new ArrayNode('tuple', new TuplePrototype(
+        $arrayNode = new ArrayNode('tuple', new TuplePrototype(
             TupleTypesEnum::STRING,
             TupleTypesEnum::INTEGER,
             TupleTypesEnum::BOOLEAN
         ));
 
         self::expectException(InvalidNodeTypeException::class);
-        $tupleNode->validateType($value);
+        $arrayNode->validateType($value);
     }
 }

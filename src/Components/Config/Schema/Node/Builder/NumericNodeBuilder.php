@@ -9,14 +9,17 @@ use Kaizen\Components\Config\Schema\Node\NumericNode;
 
 class NumericNodeBuilder
 {
-    private null|float|int $min;
-    private null|float|int $max;
+    private null|float|int $min = null;
+
+    private null|float|int $max = null;
+
     private null|float|int $defaultValue = null;
+
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $parent
+        private readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function min(float|int $min): self
@@ -49,26 +52,26 @@ class NumericNodeBuilder
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new NumericNode($this->key);
+        $numericNode = new NumericNode($this->key);
 
         if (isset($this->min)) {
-            $node->min($this->min);
+            $numericNode->min($this->min);
         }
 
         if (isset($this->max)) {
-            $node->max($this->max);
+            $numericNode->max($this->max);
         }
 
-        if (isset($this->defaultValue)) {
-            $node->defaultValue($this->defaultValue);
+        if ($this->defaultValue !== null) {
+            $numericNode->defaultValue($this->defaultValue);
         }
 
         if ($this->isRequired) {
-            $node->required();
+            $numericNode->required();
         }
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($numericNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }

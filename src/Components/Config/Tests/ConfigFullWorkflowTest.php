@@ -60,7 +60,7 @@ class ConfigFullWorkflowTest extends TestCase
             ],
         ];
 
-        self::assertEquals($expectedConfig, $config);
+        $this->assertEquals($expectedConfig, $config);
     }
 
     private function getConfigInterface(): ConfigInterface
@@ -68,9 +68,9 @@ class ConfigFullWorkflowTest extends TestCase
         return new class implements ConfigInterface {
             public function getConfigSchema(): ConfigSchema
             {
-                $configBuilder = new ConfigSchemaBuilder();
+                $configSchemaBuilder = new ConfigSchemaBuilder();
 
-                return $configBuilder
+                return $configSchemaBuilder
                     ->child('kaizen')
                     ->child('config')
                     ->array('databases')

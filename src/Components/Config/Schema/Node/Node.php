@@ -9,6 +9,7 @@ use Kaizen\Components\Config\Exception\ConfigProcessingException;
 abstract class Node implements NodeInterface
 {
     private bool $isRequired = false;
+
     private mixed $defaultValue = null;
 
     public function required(): self
@@ -35,6 +36,7 @@ abstract class Node implements NodeInterface
         return $this->defaultValue;
     }
 
+    #[\Override]
     public function processValue(mixed $value): mixed
     {
         if (null === $value && null !== $this->defaultValue) {

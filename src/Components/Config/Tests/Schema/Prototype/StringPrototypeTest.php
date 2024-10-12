@@ -28,9 +28,9 @@ class StringPrototypeTest extends TestCase
     {
         self::expectNotToPerformAssertions();
 
-        $stringArray = new ArrayNode('string', new StringPrototype());
+        $arrayNode = new ArrayNode('string', new StringPrototype());
 
-        $stringArray->validateType(['test', 'test2', 'test3']);
+        $arrayNode->validateType(['test', 'test2', 'test3']);
     }
 
     public static function invalidValuesProvider(): \Iterator

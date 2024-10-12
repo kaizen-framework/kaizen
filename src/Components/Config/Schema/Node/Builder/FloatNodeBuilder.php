@@ -9,14 +9,17 @@ use Kaizen\Components\Config\Schema\Node\FloatNode;
 
 class FloatNodeBuilder
 {
-    private ?float $min;
-    private ?float $max;
+    private ?float $min = null;
+
+    private ?float $max = null;
+
     private ?float $defaultValue = null;
+
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $parent
+        private readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function min(float $min): self
@@ -49,26 +52,26 @@ class FloatNodeBuilder
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new FloatNode($this->key);
+        $floatNode = new FloatNode($this->key);
 
         if (!is_null($this->min)) {
-            $node->min($this->min);
+            $floatNode->min($this->min);
         }
 
         if (!is_null($this->max)) {
-            $node->max($this->max);
+            $floatNode->max($this->max);
         }
 
         if (!is_null($this->defaultValue)) {
-            $node->defaultValue($this->defaultValue);
+            $floatNode->defaultValue($this->defaultValue);
         }
 
         if ($this->isRequired) {
-            $node->required();
+            $floatNode->required();
         }
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($floatNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }

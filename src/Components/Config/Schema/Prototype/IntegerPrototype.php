@@ -13,6 +13,7 @@ class IntegerPrototype extends AbstractPrototype
      *
      * @throws InvalidNodeTypeException
      */
+    #[\Override]
     public function validatePrototype(array $array): void
     {
         foreach ($array as $item) {

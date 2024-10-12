@@ -16,10 +16,10 @@ class StringNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new StringNode('string');
-        $node->validateType('okok');
+        $stringNode = new StringNode('string');
+        $stringNode->validateType('okok');
 
-        self::assertEquals('string', $node->getKey());
+        $this->assertSame('string', $stringNode->getKey());
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -41,9 +41,9 @@ class StringNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
-        $node = new StringNode('string');
+        $stringNode = new StringNode('string');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $stringNode->validateType($value);
     }
 }

@@ -21,7 +21,7 @@ class ConfigSchemaTest extends TestCase
 {
     public function testGetNode(): void
     {
-        $schema = new ConfigSchema(
+        $configSchema = new ConfigSchema(
             new BooleanNode('is_test'),
             new StringNode('test_string'),
             new ObjectNode('parameters', new ConfigSchema(
@@ -37,10 +37,10 @@ class ConfigSchemaTest extends TestCase
             )),
         );
 
-        $node = $schema->getNode('parameters');
+        $node = $configSchema->getNode('parameters');
 
-        self::assertNotNull($node);
-        self::assertEquals('parameters', $node->getKey());
+        $this->assertNotNull($node);
+        $this->assertSame('parameters', $node->getKey());
     }
 
     public function testExceptionOnDuplicatedKeys(): void

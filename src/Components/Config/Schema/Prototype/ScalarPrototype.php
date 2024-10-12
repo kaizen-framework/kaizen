@@ -6,6 +6,7 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
 class ScalarPrototype extends AbstractPrototype
 {
+    #[\Override]
     public function validatePrototype(array $array): void
     {
         foreach ($array as $item) {

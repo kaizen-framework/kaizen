@@ -16,10 +16,10 @@ class BooleanNodeTest extends TestCase
 {
     public function testValidateType(): void
     {
-        $node = new BooleanNode('boolean');
-        $node->validateType(true);
+        $booleanNode = new BooleanNode('boolean');
+        $booleanNode->validateType(true);
 
-        self::assertEquals('boolean', $node->getKey());
+        $this->assertSame('boolean', $booleanNode->getKey());
     }
 
     public static function invalidValueProvider(): \Iterator
@@ -38,9 +38,9 @@ class BooleanNodeTest extends TestCase
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
-        $node = new BooleanNode('boolean');
+        $booleanNode = new BooleanNode('boolean');
 
         $this->expectException(InvalidNodeTypeException::class);
-        $node->validateType($value);
+        $booleanNode->validateType($value);
     }
 }

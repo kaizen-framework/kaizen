@@ -35,7 +35,7 @@ class ConfigLocatorTest extends TestCase
             'test_int' => 123,
         ];
 
-        self::assertEquals($expectedConfig, $config);
+        $this->assertSame($expectedConfig, $config);
     }
 
     public function testLocateNotSupportedResource(): void

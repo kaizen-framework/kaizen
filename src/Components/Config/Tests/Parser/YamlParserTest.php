@@ -45,7 +45,7 @@ class YamlParserTest extends TestCase
             'test_int' => 123,
         ];
 
-        self::assertEquals($expectedResult, $actual);
+        $this->assertSame($expectedResult, $actual);
     }
 
     public function testParseValidYamlWithConstValues(): void
@@ -68,7 +68,7 @@ class YamlParserTest extends TestCase
             'test_const_array' => [1, '2', true, 1.20],
         ];
 
-        self::assertEquals($expectedResult, $actual);
+        $this->assertEquals($expectedResult, $actual);
     }
 
     public function testParseValidYamlWithInvalidClass(): void
@@ -105,7 +105,7 @@ class YamlParserTest extends TestCase
 
         $yamlParser = new YamlParser();
 
-        self::assertEquals($expectedResult, $yamlParser->supports($path));
+        $this->assertEquals($expectedResult, $yamlParser->supports($path));
     }
 
     public function testParseValidYamlWithInvalidConst(): void

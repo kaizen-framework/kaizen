@@ -10,11 +10,12 @@ use Kaizen\Components\Config\Schema\Node\StringNode;
 class StringNodeBuilder
 {
     private bool $isRequired = false;
+
     private ?string $defaultValue = null;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $parent
+        private readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function required(): self
@@ -33,18 +34,18 @@ class StringNodeBuilder
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new StringNode($this->key);
+        $stringNode = new StringNode($this->key);
 
         if (null !== $this->defaultValue) {
-            $node->defaultValue($this->defaultValue);
+            $stringNode->defaultValue($this->defaultValue);
         }
 
         if ($this->isRequired) {
-            $node->required();
+            $stringNode->required();
         }
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($stringNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }

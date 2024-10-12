@@ -11,9 +11,10 @@ class ObjectVariableNode extends Node
 {
     public function __construct(
         private readonly string $key,
-        private readonly ?ConfigPrototypeInterface $prototype = null,
+        private readonly ?ConfigPrototypeInterface $configPrototype = null,
     ) {}
 
+    #[\Override]
     public function validateType(mixed $value): void
     {
         if (!is_array($value)) {
@@ -24,7 +25,7 @@ class ObjectVariableNode extends Node
             ));
         }
 
-        foreach ($value as $key => $currentValue) {
+        foreach (array_keys($value) as $key) {
             if (!is_string($key)) {
                 throw new InvalidNodeTypeException(sprintf(
                     'Invalid entry "%s" for the node "%s", all the entries should have a key',
@@ -34,13 +35,14 @@ class ObjectVariableNode extends Node
             }
         }
 
-        if (!$this->prototype) {
+        if (!$this->configPrototype) {
             return;
         }
 
-        $this->prototype->validatePrototype($value);
+        $this->configPrototype->validatePrototype($value);
     }
 
+    #[\Override]
     public function getKey(): string
     {
         return $this->key;

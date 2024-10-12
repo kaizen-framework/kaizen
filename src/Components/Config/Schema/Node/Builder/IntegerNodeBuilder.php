@@ -9,14 +9,17 @@ use Kaizen\Components\Config\Schema\Node\IntegerNode;
 
 class IntegerNodeBuilder
 {
-    private ?int $min;
-    private ?int $max;
+    private ?int $min = null;
+
+    private ?int $max = null;
+
     private ?int $defaultValue = null;
+
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $parent
+        private readonly ConfigSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function min(int $min): self
@@ -49,26 +52,26 @@ class IntegerNodeBuilder
 
     public function buildNode(): ConfigSchemaBuilder
     {
-        $node = new IntegerNode($this->key);
+        $integerNode = new IntegerNode($this->key);
 
         if (isset($this->min)) {
-            $node->min($this->min);
+            $integerNode->min($this->min);
         }
 
         if (isset($this->max)) {
-            $node->max($this->max);
+            $integerNode->max($this->max);
         }
 
-        if (isset($this->defaultValue)) {
-            $node->defaultValue($this->defaultValue);
+        if ($this->defaultValue !== null) {
+            $integerNode->defaultValue($this->defaultValue);
         }
 
         if ($this->isRequired) {
-            $node->required();
+            $integerNode->required();
         }
 
-        $this->parent->add($node);
+        $this->configSchemaBuilder->add($integerNode);
 
-        return $this->parent;
+        return $this->configSchemaBuilder;
     }
 }
