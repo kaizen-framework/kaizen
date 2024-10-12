@@ -41,7 +41,7 @@ class YamlParserTest extends TestCase
             ],
             'test_scalar' => 'scalar',
             'test_string' => 'string',
-            'test_boolean' => 'boolean',
+            'test_boolean' => true,
             'test_int' => 123,
         ];
 
