@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Tests;
+namespace Kaizen\Components\Config\Tests;
 
 use Kaizen\Components\Config\ConfigInterface;
 use Kaizen\Components\Config\Loader\ConfigLocator;
@@ -72,16 +72,16 @@ class ConfigFullWorkflowTest extends TestCase
 
                 return $configBuilder
                     ->child('kaizen')
-                        ->child('config')
-                            ->array('databases')
-                                ->withPrototype(new ObjectPrototype(
-                                    (new StringNode('database_url'))->required(),
-                                    (new StringNode('database_version'))->defaultValue('1.0.0')
-                                ))
-                            ->buildNode()
-                            ->objectVariable('parameters')
-                            ->buildNode()
-                        ->build()
+                    ->child('config')
+                    ->array('databases')
+                    ->withPrototype(new ObjectPrototype(
+                        (new StringNode('database_url'))->required(),
+                        (new StringNode('database_version'))->defaultValue('1.0.0')
+                    ))
+                    ->buildNode()
+                    ->objectVariable('parameters')
+                    ->buildNode()
+                    ->build()
                     ->build()
                     ->string('okok')
                     ->buildNode()
