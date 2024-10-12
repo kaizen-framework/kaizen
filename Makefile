@@ -11,3 +11,9 @@ rector: ## Run rector analysis (dry-run)
 
 rector-real: ## Run rector analysis
 	$(RUN) vendor/bin/rector process --config=rector.php
+
+tests: ## Run phpunit tests suit of all components
+	$(RUN) vendor/bin/phpunit -c phpunit.xml src/Components/**/Tests
+
+merge-monorepo: ## Merge the composer.json files of the components into the main one
+	$(RUN) vendor/bin/monorepo-builder merge
