@@ -54,11 +54,11 @@ class NumericNodeBuilder
     {
         $numericNode = new NumericNode($this->key);
 
-        if (isset($this->min)) {
+        if (null !== $this->min) {
             $numericNode->min($this->min);
         }
 
-        if (isset($this->max)) {
+        if (null !== $this->max) {
             $numericNode->max($this->max);
         }
 

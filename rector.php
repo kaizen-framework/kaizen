@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
@@ -10,6 +11,7 @@ return RectorConfig::configure()
     ])
     ->withPhpSets(php83: true)
     ->withAttributesSets(phpunit: true)
+    ->withSkip([FlipTypeControlToUseExclusiveTypeRector::class])
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     ->withPreparedSets(
         deadCode: true,

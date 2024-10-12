@@ -38,7 +38,7 @@ class ArrayNode extends Node
         /** @var array<int, mixed> $value */
         $value = parent::processValue($value);
 
-        if (!$this->configPrototype) {
+        if (null === $this->configPrototype) {
             return $value;
         }
 

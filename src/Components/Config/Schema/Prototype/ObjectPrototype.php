@@ -63,7 +63,7 @@ class ObjectPrototype extends AbstractPrototype
         foreach ($array as $key => $value) {
             $node = $this->configSchema->getNode($key);
 
-            if (!$node) {
+            if (null === $node) {
                 throw new \RuntimeException(sprintf(
                     'Node "%s" is not configured for your config',
                     $key
@@ -92,13 +92,13 @@ class ObjectPrototype extends AbstractPrototype
                 throw new InvalidNodeTypeException('must be of type object');
             }
 
-            if (!$this->configSchema) {
+            if (null === $this->configSchema) {
                 continue;
             }
 
             $node = $this->configSchema->getNode($key);
 
-            if (!$node) {
+            if (null === $node) {
                 throw new InvalidNodeTypeException(sprintf(
                     'key %s not allowed by the prototype, expected keys "%s"',
                     $key,

@@ -82,7 +82,7 @@ class YamlParser implements ParserInterface
             ));
         }
 
-        /** @var null|array<int|string, mixed>|scalar */
+        /** @phpstan-var null|array<int|string, mixed>|scalar */
         return $constValue;
     }
 }

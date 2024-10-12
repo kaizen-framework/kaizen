@@ -35,7 +35,7 @@ class ObjectVariableNode extends Node
             }
         }
 
-        if (!$this->configPrototype) {
+        if (null === $this->configPrototype) {
             return;
         }
 

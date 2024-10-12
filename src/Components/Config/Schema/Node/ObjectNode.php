@@ -25,14 +25,14 @@ class ObjectNode extends Node implements ParentNodeInterface
             ));
         }
 
-        if (!$this->configSchema) {
+        if (null === $this->configSchema) {
             return;
         }
 
         foreach ($value as $key => $currentValue) {
             $node = $this->configSchema->getNode($key);
 
-            if (!$node) {
+            if (null === $node) {
                 throw new InvalidNodeTypeException(sprintf(
                     'key %s not allowed within the %s node, allowed keys : %s',
                     $key,
