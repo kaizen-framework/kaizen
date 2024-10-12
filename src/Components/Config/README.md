@@ -5,40 +5,49 @@ type and rules (required, default value, etc.)
 
 ## Usage
 
-To create your schema you can use the `ConfigSchemaBuilder`, it allow to build your schema with methods that represent
+To create your schema you need to create a class that implement the `ConfigInterface`.
+
+You can use the `ConfigSchemaBuilder`, it allow to build your schema with methods that represent
 the different node and their rules validations e.g.
 
 ```php
-$schemaBuilder = new \Kaizen\Components\Config\Schema\ConfigSchemaBuilder();
-
-$schema = $schemaBuilder
-    ->boolean('booleanNode')
-        ->required()
-        ->defaultValue(false)
-        ->buildNode()
-    ->integer('integerNode')
-        ->min(1)
-        ->max(10)
-        ->defaultValue(3)
-        ->buildNode()
-    ->array('arrayNode')
-        ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\IntegerPrototype())
-        ->buildNode()
-    ->array('arrayObjectNode')
-        ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(
-            new \Kaizen\Components\Config\Schema\Node\StringNode('arrayObjectStringNode'),
-            new \Kaizen\Components\Config\Schema\Node\BooleanNode('arrayObjectBooleanNode'),
-        ))
-    ->child('objectNode')
-        ->float('childFloatNode')
-            ->max(10.5)
-            ->required()
-            ->buildNode()
-        ->string('childStringNode')
-            ->required()
-            ->buildNode()
-        ->build()
-    ->build()
+class Configuration implements \Kaizen\Components\Config\ConfigInterface
+{
+    public function getConfigSchema(): \Kaizen\Components\Config\Schema\ConfigSchema 
+    {
+        $schemaBuilder = new \Kaizen\Components\Config\Schema\ConfigSchemaBuilder();
+        
+        $schema = $schemaBuilder
+            ->boolean('booleanNode')
+                ->required()
+                ->defaultValue(false)
+                ->buildNode()
+            ->integer('integerNode')
+                ->min(1)
+                ->max(10)
+                ->defaultValue(3)
+                ->buildNode()
+            ->array('arrayNode')
+                ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\IntegerPrototype())
+                ->buildNode()
+            ->array('arrayObjectNode')
+                ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(
+                    new \Kaizen\Components\Config\Schema\Node\StringNode('arrayObjectStringNode'),
+                    new \Kaizen\Components\Config\Schema\Node\BooleanNode('arrayObjectBooleanNode'),
+                ))
+                ->buildNode()
+            ->child('objectNode')
+                ->float('childFloatNode')
+                    ->max(10.5)
+                    ->required()
+                    ->buildNode()
+                ->string('childStringNode')
+                    ->required()
+                    ->buildNode()
+                ->buildChildNode()
+            ->build();
+    }
+}
 ```
 
 with this example let's take a yaml config that satisfies this schema :
@@ -62,21 +71,45 @@ objectNode:
 Then use the `ConfigLocator` to locate your config files, e.g.
 
 ```php
-$configLocator = new ConfigLocator('path/of/the/config/files', ['supported', 'extensions']);
+// The second argument is an array of parser that allow to transform the loaded file into an exploitable php array
+$configLocator = new ConfigLocator('root/path/of/the/config/files', [new \Kaizen\Components\Config\Parser\YamlParser()]);
 
-$config = $configLocator->locate();
+$config = $configLocator->locate('some_file.yaml');
+```
+
+> **Make sure to load only files that are supported by the parser you put into the Config locator constructor**
+
+For the moment the only parser available is for yaml, however you can create your own parser by create a class that
+implement the `ParserInterface` e.g.
+
+```php
+class CustomParser implements \Kaizen\Components\Config\Parser\ParserInterface
+{
+    public function parse(string $fileContent) : array
+    {
+        // logic to parse your document
+    }
+    
+    public function supports(string $path) : bool
+    {
+        // Check weather the parser should parse your file or not
+        return pathinfo($path, PATHINFO_EXTENSION) === 'desired.extension';
+    }
+}
 ```
 
 Once your schema is built you can use the `ConfigProcessor` To validate your schema
 
 ```php
 $configProcessor = new \Kaizen\Components\Config\Processor\ConfigProcessor();
-$configProcessor->processConfig($realConfig, $schema);
+$configProcessor->processConfig($config, new Configuration());
 ```
 
-The processor will automatically set the default values for the keys not present in your configuration.
+The processor will set the default value check for the rules and so on.
 
-- ### Nodes
+That's it ! your configuration is now extracted and validated
+
+- ## Nodes
 
     - scalarNode (int, float, boolean, string, null)
     - numericNode (int, float)
