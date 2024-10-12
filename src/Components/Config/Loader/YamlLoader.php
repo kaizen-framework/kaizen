@@ -15,7 +15,7 @@ class YamlLoader implements ConfigLoaderInterface
 
         if (false === $fileArray) {
             throw new \RuntimeException(
-                'Can not load ' . $path . ' config file ensure that the path is correct'
+                'Can not load '.$path.' config file ensure that the path is correct'
             );
         }
 

@@ -9,7 +9,7 @@ use Kaizen\Components\Config\Schema\Node\NodeInterface;
 interface ConfigProcessorInterface
 {
     /**
-     * Validate the configuration throw an exception if the configuration not match the defined schema
+     * Validate the configuration throw an exception if the configuration not match the defined schema.
      *
      * @param NodeInterface[] $schema
      *

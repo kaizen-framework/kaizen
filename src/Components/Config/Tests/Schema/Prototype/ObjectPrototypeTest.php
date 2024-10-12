@@ -3,7 +3,6 @@
 namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Node\BooleanNode;
 use Kaizen\Components\Config\Schema\Node\IntegerNode;
 use Kaizen\Components\Config\Schema\Node\ScalarNode;
@@ -11,7 +10,12 @@ use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ObjectPrototype::class)]
 class ObjectPrototypeTest extends TestCase
 {
     public function testValidate(): void
@@ -56,7 +60,7 @@ class ObjectPrototypeTest extends TestCase
     {
         yield [[
             ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123],
-            []
+            [],
         ]];
 
         yield [[
@@ -66,7 +70,7 @@ class ObjectPrototypeTest extends TestCase
 
         yield [[
             [],
-            ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123]
+            ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123],
         ]];
 
         yield [[
@@ -76,13 +80,13 @@ class ObjectPrototypeTest extends TestCase
 
         yield [[
             ['node1' => true, 'node2' => 'string', 'node32' => true, 'node4' => 123],
-            ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123]
+            ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123],
         ]];
 
         yield [[
             ['node1' => true, 'node2' => 'string', 'node3' => 123, 'node4' => 'string'],
             ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123],
-            ['node1' => true, 'node2' => 123, 'node3' => 'string', 'node45' => 123]
+            ['node1' => true, 'node2' => 123, 'node3' => 'string', 'node45' => 123],
         ]];
     }
 

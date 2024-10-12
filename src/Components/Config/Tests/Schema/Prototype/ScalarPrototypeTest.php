@@ -7,7 +7,12 @@ use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Prototype\ScalarPrototype;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ScalarPrototype::class)]
 class ScalarPrototypeTest extends TestCase
 {
     public function testValidateArray(): void
@@ -29,7 +34,9 @@ class ScalarPrototypeTest extends TestCase
     public static function invalidScalarArrayValueProvider(): \Iterator
     {
         yield [[[]]];
+
         yield [[new \stdClass()]];
+
         yield [[null]];
     }
 

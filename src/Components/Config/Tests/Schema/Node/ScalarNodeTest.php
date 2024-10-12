@@ -6,14 +6,22 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\ScalarNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ScalarNode::class)]
 class ScalarNodeTest extends TestCase
 {
     public static function validValueProvider(): \Iterator
     {
         yield ['string'];
+
         yield [123];
+
         yield [true];
+
         yield [123.123];
     }
 
@@ -29,6 +37,7 @@ class ScalarNodeTest extends TestCase
     public static function invalidValueProvider(): \Iterator
     {
         yield [[]];
+
         yield [new \stdClass()];
     }
 

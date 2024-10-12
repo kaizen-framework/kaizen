@@ -8,7 +8,12 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
 use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ObjectVariableNode::class)]
 class ObjectVariableNodeTest extends TestCase
 {
     public function testValidate(): void
@@ -40,7 +45,8 @@ class ObjectVariableNodeTest extends TestCase
         $prototypeMock = $this->createMock(ConfigPrototypeInterface::class);
         $prototypeMock->expects(self::once())
             ->method('validatePrototype')
-            ->with($value);
+            ->with($value)
+        ;
 
         $objectVariableNode = new ObjectVariableNode('node', $prototypeMock);
 

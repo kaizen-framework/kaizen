@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
 use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
-use Kaizen\Components\Config\Schema\Node\FloatNode;
 use Kaizen\Components\Config\Schema\Node\NumericNode;
 
 class NumericNodeBuilder
 {
-    private null|int|float $min, $max, $defaultValue = null;
+    private null|float|int $min;
+    private null|float|int $max;
+    private null|float|int $defaultValue = null;
     private bool $isRequired = false;
 
     public function __construct(
@@ -18,21 +19,21 @@ class NumericNodeBuilder
         private readonly ConfigSchemaBuilder $parent
     ) {}
 
-    public function min(int|float $min): self
+    public function min(float|int $min): self
     {
         $this->min = $min;
 
         return $this;
     }
 
-    public function max(int|float $max): self
+    public function max(float|int $max): self
     {
         $this->max = $max;
 
         return $this;
     }
 
-    public function defaultValue(int|float $defaultValue): self
+    public function defaultValue(float|int $defaultValue): self
     {
         $this->defaultValue = $defaultValue;
 
@@ -45,7 +46,7 @@ class NumericNodeBuilder
 
         return $this;
     }
-    
+
     public function buildNode(): ConfigSchemaBuilder
     {
         $node = new NumericNode($this->key);

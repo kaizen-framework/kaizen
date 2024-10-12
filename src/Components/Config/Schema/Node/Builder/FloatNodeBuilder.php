@@ -9,7 +9,9 @@ use Kaizen\Components\Config\Schema\Node\FloatNode;
 
 class FloatNodeBuilder
 {
-    private ?float $min, $max, $defaultValue = null;
+    private ?float $min;
+    private ?float $max;
+    private ?float $defaultValue = null;
     private bool $isRequired = false;
 
     public function __construct(
@@ -41,7 +43,7 @@ class FloatNodeBuilder
     public function required(): self
     {
         $this->isRequired = true;
-        
+
         return $this;
     }
 

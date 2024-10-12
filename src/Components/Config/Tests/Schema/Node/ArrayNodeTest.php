@@ -7,7 +7,12 @@ use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ArrayNode::class)]
 class ArrayNodeTest extends TestCase
 {
     public function testValidateType(): void
@@ -22,8 +27,11 @@ class ArrayNodeTest extends TestCase
     public static function invalidValuesProvider(): \Iterator
     {
         yield [123];
+
         yield [12.3];
+
         yield ['string'];
+
         yield [true];
     }
 
@@ -39,13 +47,14 @@ class ArrayNodeTest extends TestCase
     public function testPrototypeValidateIsCalled(): void
     {
         $value = [
-            'parameter' => 'value'
+            'parameter' => 'value',
         ];
 
         $prototypeMock = $this->createMock(ConfigPrototypeInterface::class);
         $prototypeMock->expects(self::once())
             ->method('validatePrototype')
-            ->with($value);
+            ->with($value)
+        ;
 
         $node = new ArrayNode('array', $prototypeMock);
         $node->validateType($value);

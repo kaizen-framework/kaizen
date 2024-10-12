@@ -6,7 +6,12 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(StringNode::class)]
 class StringNodeTest extends TestCase
 {
     public function testValidateType(): void
@@ -20,14 +25,18 @@ class StringNodeTest extends TestCase
     public static function invalidValueProvider(): \Iterator
     {
         yield [true];
+
         yield [123];
+
         yield [123.22];
+
         yield [[]];
+
         yield [new \stdClass()];
     }
 
     /**
-     * @param bool|int|float|object|array<int, mixed> $value
+     * @param array<int, mixed>|bool|float|int|object $value
      */
     #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void

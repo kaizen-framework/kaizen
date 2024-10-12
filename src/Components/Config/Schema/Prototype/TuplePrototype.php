@@ -3,7 +3,6 @@
 namespace Kaizen\Components\Config\Schema\Prototype;
 
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Schema\Node\NodeInterface;
 
 class TuplePrototype extends AbstractPrototype
 {

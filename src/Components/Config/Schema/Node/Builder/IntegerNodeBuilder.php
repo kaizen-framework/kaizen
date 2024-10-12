@@ -9,7 +9,9 @@ use Kaizen\Components\Config\Schema\Node\IntegerNode;
 
 class IntegerNodeBuilder
 {
-    private ?int $min, $max, $defaultValue = null;
+    private ?int $min;
+    private ?int $max;
+    private ?int $defaultValue = null;
     private bool $isRequired = false;
 
     public function __construct(

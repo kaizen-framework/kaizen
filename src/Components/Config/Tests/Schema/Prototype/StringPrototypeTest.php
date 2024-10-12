@@ -7,7 +7,12 @@ use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Prototype\StringPrototype;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(StringPrototype::class)]
 class StringPrototypeTest extends TestCase
 {
     public function testValidateArray(): void
@@ -31,10 +36,15 @@ class StringPrototypeTest extends TestCase
     public static function invalidValuesProvider(): \Iterator
     {
         yield [[123]];
+
         yield [['test', 123]];
+
         yield [['test', 123.123, false]];
+
         yield [[123, 'test', true]];
+
         yield [[true, 'test', true]];
+
         yield [['test', 123, true, 'other']];
     }
 
@@ -56,7 +66,7 @@ class StringPrototypeTest extends TestCase
     #[DataProvider('invalidValuesProvider')]
     public function testInvalidWithArrayNode(array $value): void
     {
-        $arrayNode = new ArrayNode('array_node',new StringPrototype());
+        $arrayNode = new ArrayNode('array_node', new StringPrototype());
 
         self::expectException(InvalidNodeTypeException::class);
         $arrayNode->validateType($value);

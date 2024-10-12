@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
 use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
-use Kaizen\Components\Config\Schema\Node\FloatNode;
-use Kaizen\Components\Config\Schema\Node\IntegerNode;
 use Kaizen\Components\Config\Schema\Node\ScalarNode;
 
 class ScalarNodeBuilder
 {
     protected bool $isRequired = false;
-    protected string|int|float|bool|null $defaultValue = null;
+    protected null|bool|float|int|string $defaultValue = null;
 
     public function __construct(
         protected readonly string $key,
@@ -26,7 +24,7 @@ class ScalarNodeBuilder
         return $this;
     }
 
-    public function defaultValue(string|int|float|bool $defaultValue): self
+    public function defaultValue(bool|float|int|string $defaultValue): self
     {
         $this->defaultValue = $defaultValue;
 

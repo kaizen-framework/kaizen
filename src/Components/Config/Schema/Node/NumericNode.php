@@ -9,8 +9,8 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
 class NumericNode extends Node
 {
-    private int|float $min;
-    private int|float $max;
+    private float|int $min;
+    private float|int $max;
 
     public function __construct(
         public readonly string $key,
@@ -32,26 +32,26 @@ class NumericNode extends Node
         return $this->key;
     }
 
-    public function min(int|float $min): self
+    public function min(float|int $min): self
     {
         $this->min = $min;
 
         return $this;
     }
 
-    public function getMin(): int|float
+    public function getMin(): float|int
     {
         return $this->min;
     }
 
-    public function max(int|float $max): self
+    public function max(float|int $max): self
     {
         $this->max = $max;
 
         return $this;
     }
 
-    public function getMax(): int|float
+    public function getMax(): float|int
     {
         return $this->max;
     }

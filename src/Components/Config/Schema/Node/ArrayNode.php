@@ -15,7 +15,7 @@ class ArrayNode extends Node
 
     public function validateType(mixed $value): void
     {
-        if(!is_array($value)) {
+        if (!is_array($value)) {
             throw new InvalidNodeTypeException(sprintf(
                 'The node "%s" must be of type "array", "%s" given',
                 $this->getKey(),

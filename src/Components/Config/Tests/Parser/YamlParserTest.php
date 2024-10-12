@@ -9,14 +9,19 @@ use Kaizen\Components\Config\Exception\ParsingException;
 use Kaizen\Components\Config\Parser\YamlParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(YamlParser::class)]
 class YamlParserTest extends TestCase
 {
     public function testParseValidYaml(): void
     {
         $yamlParser = new YamlParser();
 
-        $fileContent = <<<YAML
+        $fileContent = <<<'YAML'
         test_array:
           default:
             test: okok
@@ -47,7 +52,7 @@ class YamlParserTest extends TestCase
     {
         $yamlParser = new YamlParser();
 
-        $fileContent = <<<YAML
+        $fileContent = <<<'YAML'
         test_enum: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestEnum::ENUM_CONST
         test_const_interface: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestConstInterface::INTERFACE_CONST
         test_const_class: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestConstClass::CLASS_CONST_STRING
@@ -60,7 +65,7 @@ class YamlParserTest extends TestCase
             'test_enum' => 'string ENUM_CONST',
             'test_const_interface' => 'string INTERFACE_CONST',
             'test_const_class' => 'string CLASS_CONST',
-            'test_const_array' => [1, '2', true, 1.20]
+            'test_const_array' => [1, '2', true, 1.20],
         ];
 
         self::assertEquals($expectedResult, $actual);
@@ -70,7 +75,7 @@ class YamlParserTest extends TestCase
     {
         $yamlParser = new YamlParser();
 
-        $fileContent = <<<YAML
+        $fileContent = <<<'YAML'
         exists: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestEnum::ENUM_CONST
         not_exists: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\NotExistingClassTwo::ENUM_CONST
         YAML;
@@ -83,6 +88,7 @@ class YamlParserTest extends TestCase
     public static function fileProvider(): \Iterator
     {
         yield 'yaml' => ['valid.yaml', true];
+
         yield 'xml' => ['valid.xml', false];
     }
 
@@ -105,7 +111,7 @@ class YamlParserTest extends TestCase
     {
         $yamlParser = new YamlParser();
 
-        $fileContent = <<<YAML
+        $fileContent = <<<'YAML'
         test_enum: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestEnum::NOT_EXISTS
         test_const_interface: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestConstInterface::NOT_EXISTS
         YAML;
@@ -117,13 +123,13 @@ class YamlParserTest extends TestCase
 
     public static function invalidYamlProvider(): \Iterator
     {
-        yield 'With invalid indentation' => [<<<YAML
+        yield 'With invalid indentation' => [<<<'YAML'
         key1:
           subkey1: value1
             subkey2: value2
         YAML];
 
-        yield 'With invalid anchors alias' => [<<<YAML
+        yield 'With invalid anchors alias' => [<<<'YAML'
         person: &person
           name: John Doe
           age: 30

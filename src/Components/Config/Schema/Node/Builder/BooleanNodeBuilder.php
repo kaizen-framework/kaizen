@@ -15,7 +15,7 @@ class BooleanNodeBuilder
     public function __construct(
         private readonly string $key,
         private readonly ConfigSchemaBuilder $parent
-    ) { }
+    ) {}
 
     public function required(): self
     {

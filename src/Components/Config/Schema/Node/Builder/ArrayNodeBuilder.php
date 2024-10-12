@@ -6,7 +6,6 @@ namespace Kaizen\Components\Config\Schema\Node\Builder;
 
 use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\ArrayNode;
-use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
 use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 
 class ArrayNodeBuilder

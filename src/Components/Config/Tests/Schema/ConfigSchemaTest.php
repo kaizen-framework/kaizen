@@ -11,7 +11,12 @@ use Kaizen\Components\Config\Schema\Node\ObjectNode;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ConfigSchema::class)]
 class ConfigSchemaTest extends TestCase
 {
     public function testGetNode(): void

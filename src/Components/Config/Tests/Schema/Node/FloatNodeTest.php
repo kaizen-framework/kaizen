@@ -7,7 +7,12 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\FloatNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(FloatNode::class)]
 class FloatNodeTest extends TestCase
 {
     public function testValidateType(): void
@@ -30,9 +35,13 @@ class FloatNodeTest extends TestCase
     public static function invalidValueProvider(): \Iterator
     {
         yield [true];
+
         yield ['test'];
+
         yield [123];
+
         yield [[]];
+
         yield [new \stdClass()];
     }
 

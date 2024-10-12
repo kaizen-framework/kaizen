@@ -8,7 +8,12 @@ use Kaizen\Components\Config\Schema\Prototype\TuplePrototype;
 use Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(TuplePrototype::class)]
 class TuplePrototypeTest extends TestCase
 {
     public function testValidateArray(): void
@@ -42,11 +47,17 @@ class TuplePrototypeTest extends TestCase
     public static function invalidTupleValueProvider(): \Iterator
     {
         yield [[123]];
+
         yield [['test', 123]];
+
         yield [['test', 123.123, false]];
+
         yield [[123, 'test', true]];
+
         yield [[true, 'test', true]];
+
         yield [[12, 23.32, true]];
+
         yield [['test', 123, true, 'other']];
     }
 

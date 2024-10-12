@@ -8,14 +8,19 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\ConfigSchema;
 use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Node\IntegerNode;
-use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
 use Kaizen\Components\Config\Schema\Prototype\TuplePrototype;
 use Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ObjectNode::class)]
 class ObjectNodeTest extends TestCase
 {
     public function testValidateType(): void

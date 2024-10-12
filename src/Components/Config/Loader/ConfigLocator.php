@@ -28,7 +28,7 @@ readonly class ConfigLocator
      */
     public function locate(string $filename): array
     {
-        $realPath = realpath($this->rootDir . DIRECTORY_SEPARATOR . $filename);
+        $realPath = realpath($this->rootDir.DIRECTORY_SEPARATOR.$filename);
 
         if (false === $realPath) {
             throw new ResourceNotFoundException(sprintf('Unable to locate configuration file "%s"', $filename));

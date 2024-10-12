@@ -6,7 +6,12 @@ use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\BooleanNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(BooleanNode::class)]
 class BooleanNodeTest extends TestCase
 {
     public function testValidateType(): void
@@ -20,9 +25,13 @@ class BooleanNodeTest extends TestCase
     public static function invalidValueProvider(): \Iterator
     {
         yield [123];
+
         yield ['test'];
+
         yield [123.123];
+
         yield [[]];
+
         yield [new \stdClass()];
     }
 

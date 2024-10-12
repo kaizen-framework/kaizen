@@ -8,7 +8,12 @@ use Kaizen\Components\Config\Exception\ResourceNotFoundException;
 use Kaizen\Components\Config\Loader\ConfigLocator;
 use Kaizen\Components\Config\Parser\YamlParser;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ConfigLocator::class)]
 class ConfigLocatorTest extends TestCase
 {
     public function testLocateYamlResource(): void

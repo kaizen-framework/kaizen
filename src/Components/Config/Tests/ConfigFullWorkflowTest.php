@@ -12,8 +12,13 @@ use Kaizen\Components\Config\Schema\ConfigSchema;
 use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
+#[CoversNothing]
 class ConfigFullWorkflowTest extends TestCase
 {
     public function testConfigFullWorkflow(): void
@@ -80,7 +85,8 @@ class ConfigFullWorkflowTest extends TestCase
                     ->build()
                     ->string('okok')
                     ->buildNode()
-                ->build();
+                    ->build()
+                ;
             }
         };
     }

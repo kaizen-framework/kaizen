@@ -11,7 +11,7 @@ class ObjectPrototype extends AbstractPrototype
     private ?ConfigSchema $prototypeSchema;
 
     /**
-     * @param NodeInterface[]|null $nodes
+     * @param null|NodeInterface[] $nodes
      */
     public function __construct(
         ?NodeInterface ...$nodes,

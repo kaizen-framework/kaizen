@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Kaizen\Components\Config\Schema;
 
 use Kaizen\Components\Config\Exception\InvalidSchemaException;
+use Kaizen\Components\Config\Schema\Node\Builder\ArrayNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\BooleanNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\FloatNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\IntegerNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\ObjectVariableNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\ScalarNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\StringNodeBuilder;
-use Kaizen\Components\Config\Schema\Node\Builder\BooleanNodeBuilder;
-use Kaizen\Components\Config\Schema\Node\Builder\ArrayNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\NodeInterface;
 use Kaizen\Components\Config\Schema\Node\ObjectNode;
 

@@ -15,7 +15,7 @@ interface NodeInterface
     public function validateType(mixed $value): void;
 
     /**
-     * Get the node key
+     * Get the node key.
      */
     public function getKey(): string;
 

@@ -7,7 +7,12 @@ use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Prototype\IntegerPrototype;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(IntegerPrototype::class)]
 class IntegerPrototypeTest extends TestCase
 {
     public function testValidateArray(): void
@@ -29,8 +34,11 @@ class IntegerPrototypeTest extends TestCase
     public static function invalidIntegerArrayValueProvider(): \Iterator
     {
         yield [[12.12]];
+
         yield [['string']];
+
         yield [[true]];
+
         yield [[true, 'test']];
     }
 

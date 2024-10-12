@@ -35,11 +35,11 @@ class YamlParser implements ParserInterface
     }
 
     /**
-     * @return array<int|string, mixed>|int|float|string|bool|null
+     * @return null|array<int|string, mixed>|bool|float|int|string
      *
      * @throws ParsingException
      */
-    private function parseTags(string $value, string $tag, string $flag): array|int|float|string|bool|null
+    private function parseTags(string $value, string $tag, string $flag): null|array|bool|float|int|string
     {
         [0 => $class, 1 => $constant] = explode('::', $value);
 

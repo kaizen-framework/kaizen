@@ -15,13 +15,13 @@ use Kaizen\Components\Config\Schema\Node\ScalarNode;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ScalarPrototype;
 use Kaizen\Components\Config\Schema\Prototype\StringPrototype;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
- #[CoversClass(ConfigSchemaBuilder::class)]
+#[CoversClass(ConfigSchemaBuilder::class)]
 class ConfigSchemaBuilderTest extends TestCase
 {
     public function testBuild(): void
@@ -55,7 +55,8 @@ class ConfigSchemaBuilderTest extends TestCase
             ->array('array')
                 ->withPrototype(new ScalarPrototype())
                 ->buildNode()
-            ->build();
+            ->build()
+        ;
 
         self::assertInstanceOf(ConfigSchema::class, $configSchema);
 

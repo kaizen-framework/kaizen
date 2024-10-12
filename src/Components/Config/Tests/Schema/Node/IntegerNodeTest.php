@@ -4,11 +4,15 @@ namespace Kaizen\Components\Config\Tests\Schema\Node;
 
 use Kaizen\Components\Config\Exception\ConfigProcessingException;
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Schema\Node\FloatNode;
 use Kaizen\Components\Config\Schema\Node\IntegerNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(IntegerNode::class)]
 class IntegerNodeTest extends TestCase
 {
     public function testValidateType(): void
@@ -31,9 +35,13 @@ class IntegerNodeTest extends TestCase
     public static function invalidValueProvider(): \Iterator
     {
         yield [true];
+
         yield ['test'];
+
         yield [123.123];
+
         yield [[]];
+
         yield [new \stdClass()];
     }
 

@@ -7,7 +7,7 @@ namespace Kaizen\Components\Config\Definition;
 class FileConfigDefinition
 {
     /**
-     * @param array<string, string|int|array|bool> $configData
+     * @param array<string, array|bool|int|string> $configData
      */
     public function __construct(
         private readonly string $filename,

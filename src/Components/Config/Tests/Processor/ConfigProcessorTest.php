@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Tests\Processor;
 
+use Kaizen\Components\Config\ConfigInterface;
 use Kaizen\Components\Config\Exception\ConfigProcessingException;
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Exception\NodeNotFoundException;
@@ -15,16 +16,20 @@ use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
 use Kaizen\Components\Config\Schema\Node\ScalarNode;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\StringPrototype;
-use Kaizen\Components\Config\ConfigInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+#[CoversClass(ConfigProcessor::class)]
 class ConfigProcessorTest extends TestCase
 {
     public function testDefaultValuesAreAppendForMissingConfig(): void
     {
         $config = [
-            'node' => 'test'
+            'node' => 'test',
         ];
 
         $schema = new ConfigSchema(
@@ -35,7 +40,8 @@ class ConfigProcessorTest extends TestCase
         $configInterface = $this->createMock(ConfigInterface::class);
         $configInterface->expects($this->once())
             ->method('getConfigSchema')
-            ->willReturn($schema);
+            ->willReturn($schema)
+        ;
 
         $configProcessor = new ConfigProcessor();
 
@@ -58,10 +64,11 @@ class ConfigProcessorTest extends TestCase
         $configInterface = $this->createMock(ConfigInterface::class);
         $configInterface->expects($this->once())
             ->method('getConfigSchema')
-            ->willReturn($configSchema);
+            ->willReturn($configSchema)
+        ;
 
         $config = [
-            'node' => 'test'
+            'node' => 'test',
         ];
 
         $configProcessor = new ConfigProcessor();
@@ -77,7 +84,8 @@ class ConfigProcessorTest extends TestCase
         $configInterface = $this->createMock(ConfigInterface::class);
         $configInterface->expects($this->once())
             ->method('getConfigSchema')
-            ->willReturn($this->getSchema());
+            ->willReturn($this->getSchema())
+        ;
 
         $configProcessor->processConfig($config, $configInterface);
     }
@@ -94,22 +102,22 @@ class ConfigProcessorTest extends TestCase
                     [
                         'key1' => 'value',
                         'key2' => 21,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'services' => [
                 '_default' => [
                     'bind' => [
-                        'string $param' => '%parameter1%'
-                    ]
+                        'string $param' => '%parameter1%',
+                    ],
                 ],
                 'App\\' => [
                     'autowire' => true,
                 ],
-                'App\\Service\\Test' => [
+                'App\Service\Test' => [
                     'lazy' => true,
                 ],
-            ]
+            ],
         ], NodeNotFoundException::class];
 
         yield 'With invalid type' => [[
@@ -122,22 +130,22 @@ class ConfigProcessorTest extends TestCase
                     [
                         'key1' => 'value',
                         'key2' => 21,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'services' => [
                 '_default' => [
                     'bind' => [
-                        'string $param' => '%parameter1%'
-                    ]
+                        'string $param' => '%parameter1%',
+                    ],
                 ],
                 'App\\' => [
                     'autowire' => 123,
                 ],
-                'App\\Service\\Test' => [
+                'App\Service\Test' => [
                     'lazy' => true,
                 ],
-            ]
+            ],
         ], InvalidNodeTypeException::class];
 
         yield 'With missing required field' => [[
@@ -150,8 +158,8 @@ class ConfigProcessorTest extends TestCase
                     [
                         'key1' => 'value',
                         'key2' => 21,
-                    ]
-                ]
+                    ],
+                ],
             ],
         ], ConfigProcessingException::class];
 
@@ -165,8 +173,8 @@ class ConfigProcessorTest extends TestCase
                     [
                         'key1' => 'value',
                         'key2' => 21,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'services' => [
                 '_default' => [
@@ -174,10 +182,10 @@ class ConfigProcessorTest extends TestCase
                 'App\\' => [
                     'autowire' => true,
                 ],
-                'App\\Service\\Test' => [
+                'App\Service\Test' => [
                     'lazy' => true,
                 ],
-            ]
+            ],
         ], ConfigProcessingException::class];
 
         yield 'With invalid object node schema' => [[
@@ -190,22 +198,22 @@ class ConfigProcessorTest extends TestCase
                     [
                         'key1' => 'value',
                         'key2' => 21,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'services' => [
                 '_default' => [
                     'bind' => [
-                        'string $param' => '%parameter1%'
-                    ]
+                        'string $param' => '%parameter1%',
+                    ],
                 ],
                 'App\\' => [
                     'invalid_node' => true,
                 ],
-                'App\\Service\\Test' => [
+                'App\Service\Test' => [
                     'lazy' => true,
                 ],
-            ]
+            ],
         ], NodeNotFoundException::class];
     }
 
@@ -222,7 +230,8 @@ class ConfigProcessorTest extends TestCase
         $configInterface = $this->createMock(ConfigInterface::class);
         $configInterface->expects($this->once())
             ->method('getConfigSchema')
-            ->willReturn($this->getSchema());
+            ->willReturn($this->getSchema())
+        ;
 
         $configProcessor->processConfig($config, $configInterface);
     }
@@ -242,22 +251,22 @@ class ConfigProcessorTest extends TestCase
                     [
                         'key1' => 'value',
                         'key2' => 21,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'services' => [
                 '_default' => [
                     'bind' => [
-                        'string $param' => '%parameter1%'
-                    ]
+                        'string $param' => '%parameter1%',
+                    ],
                 ],
                 'App\\' => [
                     'autowire' => true,
                 ],
-                'App\\Service\\Test' => [
+                'App\Service\Test' => [
                     'lazy' => true,
                 ],
-            ]
+            ],
         ];
     }
 
