@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\ConfigProcessingException;
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\FloatNode;
-use App\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Exception\ConfigProcessingException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\FloatNode;
+use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class IntegerNodeTest extends TestCase
@@ -27,7 +28,7 @@ class IntegerNodeTest extends TestCase
         $node->processValue(1);
     }
 
-    public function invalidValueProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
         yield [true];
         yield ['test'];
@@ -36,9 +37,7 @@ class IntegerNodeTest extends TestCase
         yield [new \stdClass()];
     }
 
-    /**
-     * @dataProvider invalidValueProvider
-     */
+    #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
         $node = new IntegerNode('integer');

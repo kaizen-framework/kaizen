@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Components\Config\Schema\Node;
+namespace Kaizen\Components\Config\Schema\Node;
 
-use App\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\ConfigSchema;
 
 interface ParentNodeInterface
 {

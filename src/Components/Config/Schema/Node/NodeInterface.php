@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Components\Config\Schema\Node;
+namespace Kaizen\Components\Config\Schema\Node;
 
-use App\Components\Config\Exception\ConfigProcessingException;
-use App\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\ConfigProcessingException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
 interface NodeInterface
 {

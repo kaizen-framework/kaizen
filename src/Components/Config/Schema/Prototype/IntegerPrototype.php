@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema\Prototype;
+namespace Kaizen\Components\Config\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
-class IntegerPrototype implements ConfigPrototypeInterface
+class IntegerPrototype extends AbstractPrototype
 {
+    /**
+     * @param array<int, mixed> $array
+     *
+     * @throws InvalidNodeTypeException
+     */
     public function validatePrototype(array $array): void
     {
         foreach ($array as $item) {

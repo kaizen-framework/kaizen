@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema;
+namespace Kaizen\Components\Config\Schema;
 
-use App\Components\Config\Exception\InvalidSchemaException;
-use App\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Exception\InvalidSchemaException;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
 
 class ConfigSchema
 {

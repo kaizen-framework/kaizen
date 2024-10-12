@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Components\Config\Schema\Node;
+namespace Kaizen\Components\Config\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use Kaizen\Components\Config\Exception\ConfigProcessingException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 
 class ArrayNode extends Node
 {
@@ -23,6 +24,24 @@ class ArrayNode extends Node
         }
 
         $this->arrayPrototype?->validatePrototype($value);
+    }
+
+    /**
+     * @return array<int, mixed>
+     *
+     * @throws ConfigProcessingException
+     */
+    #[\Override]
+    public function processValue(mixed $value): array
+    {
+        /** @var array<int, mixed> $value */
+        $value = parent::processValue($value);
+
+        if (!$this->arrayPrototype) {
+            return $value;
+        }
+
+        return $this->arrayPrototype->processPrototype($value);
     }
 
     public function getKey(): string

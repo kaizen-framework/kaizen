@@ -2,19 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Tests\Processor;
+namespace Kaizen\Components\Config\Tests\Processor;
 
-use App\Components\Config\Exception\ConfigProcessingException;
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Exception\NodeNotFoundException;
-use App\Components\Config\Processor\ConfigProcessor;
-use App\Components\Config\Schema\ConfigSchema;
-use App\Components\Config\Schema\Node\BooleanNode;
-use App\Components\Config\Schema\Node\ObjectNode;
-use App\Components\Config\Schema\Node\ObjectVariableNode;
-use App\Components\Config\Schema\Node\ScalarNode;
-use App\Components\Config\Schema\Node\StringNode;
-use App\Components\Config\Schema\Prototype\StringPrototype;
+use Kaizen\Components\Config\Exception\ConfigProcessingException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\NodeNotFoundException;
+use Kaizen\Components\Config\Processor\ConfigProcessor;
+use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
+use Kaizen\Components\Config\Schema\Node\ScalarNode;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\Prototype\StringPrototype;
+use Kaizen\Components\Config\ConfigInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ConfigProcessorTest extends TestCase
@@ -30,9 +32,14 @@ class ConfigProcessorTest extends TestCase
             (new ScalarNode('node2'))->defaultValue('default_value')
         );
 
+        $configInterface = $this->createMock(ConfigInterface::class);
+        $configInterface->expects($this->once())
+            ->method('getConfigSchema')
+            ->willReturn($schema);
+
         $configProcessor = new ConfigProcessor();
 
-        $configProcessor->processConfig($config, $schema);
+        $configProcessor->processConfig($config, $configInterface);
 
         self::assertEquals('test', $config['node']);
         self::assertEquals('default_value', $config['node2']);
@@ -48,24 +55,34 @@ class ConfigProcessorTest extends TestCase
 
         $configSchema->method('getNode')->willReturn($node);
 
+        $configInterface = $this->createMock(ConfigInterface::class);
+        $configInterface->expects($this->once())
+            ->method('getConfigSchema')
+            ->willReturn($configSchema);
+
         $config = [
             'node' => 'test'
         ];
 
         $configProcessor = new ConfigProcessor();
-        $configProcessor->processConfig($config, $configSchema);
+        $configProcessor->processConfig($config, $configInterface);
     }
 
     public function testProcessConfig(): void
     {
-        $this->expectNotToPerformAssertions();
         $configProcessor = new ConfigProcessor();
 
         $config = $this->getConfig();
-        $configProcessor->processConfig($config, $this->getSchema());
+
+        $configInterface = $this->createMock(ConfigInterface::class);
+        $configInterface->expects($this->once())
+            ->method('getConfigSchema')
+            ->willReturn($this->getSchema());
+
+        $configProcessor->processConfig($config, $configInterface);
     }
 
-    public function invalidConfigProvider(): \Iterator
+    public static function invalidConfigProvider(): \Iterator
     {
         yield 'With invalid key' => [[
             'parameter' => [
@@ -193,16 +210,26 @@ class ConfigProcessorTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidConfigProvider
+     * @param array<string, mixed> $config
      */
+    #[DataProvider('invalidConfigProvider')]
     public function testWithInvalidConfig(array $config, string $exceptionClass): void
     {
         $configProcessor = new ConfigProcessor();
 
         $this->expectException($exceptionClass);
-        $configProcessor->processConfig($config, $this->getSchema());
+
+        $configInterface = $this->createMock(ConfigInterface::class);
+        $configInterface->expects($this->once())
+            ->method('getConfigSchema')
+            ->willReturn($this->getSchema());
+
+        $configProcessor->processConfig($config, $configInterface);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getConfig(): array
     {
         return [

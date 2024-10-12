@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Components\Config\Processor;
+namespace Kaizen\Components\Config\Processor;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Exception\NodeNotFoundException;
-use App\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\NodeNotFoundException;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
 
 interface ConfigProcessorInterface
 {

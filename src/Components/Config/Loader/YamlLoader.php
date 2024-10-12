@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Loader;
+namespace Kaizen\Components\Config\Loader;
 
-use App\Components\Config\Definition\FileConfigDefinition;
-use App\Components\Config\Exception\LoaderException;
+use Kaizen\Components\Config\Definition\FileConfigDefinition;
+use Kaizen\Components\Config\Exception\LoaderException;
 
 class YamlLoader implements ConfigLoaderInterface
 {

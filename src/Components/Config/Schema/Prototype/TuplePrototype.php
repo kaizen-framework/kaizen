@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Components\Config\Schema\Prototype;
+namespace Kaizen\Components\Config\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
 
-class TuplePrototype implements ConfigPrototypeInterface
+class TuplePrototype extends AbstractPrototype
 {
+    /** @var TupleTypesEnum[] */
     private array $types;
 
     public function __construct(
@@ -15,6 +16,11 @@ class TuplePrototype implements ConfigPrototypeInterface
         $this->types = $types;
     }
 
+    /**
+     * @param array<int, mixed> $array
+     *
+     * @throws InvalidNodeTypeException
+     */
     public function validatePrototype(array $array): void
     {
         if (count($array) !== count($this->types)) {

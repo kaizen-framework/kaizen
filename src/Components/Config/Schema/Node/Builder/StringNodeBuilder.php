@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema\Node\Builder;
+namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use App\Components\Config\Schema\ConfigSchemaBuilder;
-use App\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\Node\StringNode;
 
 class StringNodeBuilder
 {
-    private bool $isRequired;
+    private bool $isRequired = false;
     private ?string $defaultValue = null;
 
     public function __construct(

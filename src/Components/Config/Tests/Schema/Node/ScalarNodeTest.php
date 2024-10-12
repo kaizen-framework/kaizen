@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ScalarNode;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ScalarNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ScalarNodeTest extends TestCase
 {
-    public function validValueProvider(): \Iterator
+    public static function validValueProvider(): \Iterator
     {
         yield ['string'];
         yield [123];
@@ -16,9 +17,7 @@ class ScalarNodeTest extends TestCase
         yield [123.123];
     }
 
-    /**
-     * @dataProvider validValueProvider
-     */
+    #[DataProvider('validValueProvider')]
     public function testValidateType(): void
     {
         $node = new ScalarNode('scalar');
@@ -27,15 +26,13 @@ class ScalarNodeTest extends TestCase
         self::assertEquals('scalar', $node->getKey());
     }
 
-    public function invalidValueProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
         yield [[]];
         yield [new \stdClass()];
     }
 
-    /**
-     * @dataProvider invalidValueProvider
-     */
+    #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
         $node = new ScalarNode('scalar');

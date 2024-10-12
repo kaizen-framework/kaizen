@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Prototype;
+namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Prototype\IntegerPrototype;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\IntegerPrototype;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class IntegerPrototypeTest extends TestCase
 {
-    public function testValidateArray()
+    public function testValidateArray(): void
     {
         self::expectNotToPerformAssertions();
 
@@ -17,7 +18,7 @@ class IntegerPrototypeTest extends TestCase
         $scalarPrototype->validatePrototype([123, 12]);
     }
 
-    public function testValidateWithArrayNode()
+    public function testValidateWithArrayNode(): void
     {
         self::expectNotToPerformAssertions();
 
@@ -25,7 +26,7 @@ class IntegerPrototypeTest extends TestCase
         $scalarPrototype->validateType([123, 12]);
     }
 
-    public function invalidIntegerArrayValueProvider(): \Iterator
+    public static function invalidIntegerArrayValueProvider(): \Iterator
     {
         yield [[12.12]];
         yield [['string']];
@@ -34,9 +35,10 @@ class IntegerPrototypeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidIntegerArrayValueProvider
+     * @param array<int, mixed> $value
      */
-    public function testIntegerException(mixed $value): void
+    #[DataProvider('invalidIntegerArrayValueProvider')]
+    public function testIntegerException(array $value): void
     {
         $scalarPrototype = new IntegerPrototype();
 
@@ -44,9 +46,7 @@ class IntegerPrototypeTest extends TestCase
         $scalarPrototype->validatePrototype($value);
     }
 
-    /**
-     * @dataProvider invalidIntegerArrayValueProvider
-     */
+    #[DataProvider('invalidIntegerArrayValueProvider')]
     public function testIntegerExceptionWithArrayNode(mixed $value): void
     {
         $scalarArrayNode = new ArrayNode('node', new IntegerPrototype());

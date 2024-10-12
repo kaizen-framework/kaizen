@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema;
+namespace Kaizen\Components\Config\Schema;
 
-use App\Components\Config\Exception\InvalidSchemaException;
-use App\Components\Config\Schema\Node\Builder\FloatNodeBuilder;
-use App\Components\Config\Schema\Node\Builder\IntegerNodeBuilder;
-use App\Components\Config\Schema\Node\Builder\ObjectVariableNodeBuilder;
-use App\Components\Config\Schema\Node\Builder\ScalarNodeBuilder;
-use App\Components\Config\Schema\Node\Builder\StringNodeBuilder;
-use App\Components\Config\Schema\Node\Builder\BooleanNodeBuilder;
-use App\Components\Config\Schema\Node\Builder\ArrayNodeBuilder;
-use App\Components\Config\Schema\Node\NodeInterface;
-use App\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Exception\InvalidSchemaException;
+use Kaizen\Components\Config\Schema\Node\Builder\FloatNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\IntegerNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\ObjectVariableNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\ScalarNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\StringNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\BooleanNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\Builder\ArrayNodeBuilder;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
 
 class ConfigSchemaBuilder
 {

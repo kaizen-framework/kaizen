@@ -2,23 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Tests\Schema;
+namespace Kaizen\Components\Config\Tests\Schema;
 
-use App\Components\Config\Schema\ConfigSchema;
-use App\Components\Config\Schema\ConfigSchemaBuilder;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Node\BooleanNode;
-use App\Components\Config\Schema\Node\FloatNode;
-use App\Components\Config\Schema\Node\IntegerNode;
-use App\Components\Config\Schema\Node\NodeInterface;
-use App\Components\Config\Schema\Node\ObjectNode;
-use App\Components\Config\Schema\Node\ScalarNode;
-use App\Components\Config\Schema\Node\StringNode;
-use App\Components\Config\Schema\Prototype\ObjectPrototype;
-use App\Components\Config\Schema\Prototype\ScalarPrototype;
-use App\Components\Config\Schema\Prototype\StringPrototype;
+use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\Node\FloatNode;
+use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Schema\Node\ScalarNode;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\Prototype\ScalarPrototype;
+use Kaizen\Components\Config\Schema\Prototype\StringPrototype;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+/**
+ * @internal
+ */
+ #[CoversClass(ConfigSchemaBuilder::class)]
 class ConfigSchemaBuilderTest extends TestCase
 {
     public function testBuild(): void

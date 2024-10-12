@@ -9,7 +9,7 @@ To create your schema you can use the `ConfigSchemaBuilder`, it allow to build y
 the different node and their rules validations e.g.
 
 ```php
-$schemaBuilder = new \App\Components\Config\Schema\ConfigSchemaBuilder();
+$schemaBuilder = new \Kaizen\Components\Config\Schema\ConfigSchemaBuilder();
 
 $schema = $schemaBuilder
     ->boolean('booleanNode')
@@ -22,12 +22,12 @@ $schema = $schemaBuilder
         ->defaultValue(3)
         ->buildNode()
     ->array('arrayNode')
-        ->withPrototype(new \App\Components\Config\Schema\Prototype\IntegerPrototype())
+        ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\IntegerPrototype())
         ->buildNode()
     ->array('arrayObjectNode')
-        ->withPrototype(new \App\Components\Config\Schema\Prototype\ObjectPrototype(
-            new \App\Components\Config\Schema\Node\StringNode('arrayObjectStringNode'),
-            new \App\Components\Config\Schema\Node\BooleanNode('arrayObjectBooleanNode'),
+        ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(
+            new \Kaizen\Components\Config\Schema\Node\StringNode('arrayObjectStringNode'),
+            new \Kaizen\Components\Config\Schema\Node\BooleanNode('arrayObjectBooleanNode'),
         ))
     ->child('objectNode')
         ->float('childFloatNode')
@@ -59,10 +59,18 @@ objectNode:
   childStringNode: a string
 ```
 
+Then use the `ConfigLocator` to locate your config files, e.g.
+
+```php
+$configLocator = new ConfigLocator('path/of/the/config/files', ['supported', 'extensions']);
+
+$config = $configLocator->locate();
+```
+
 Once your schema is built you can use the `ConfigProcessor` To validate your schema
 
 ```php
-$configProcessor = new \App\Components\Config\Processor\ConfigProcessor();
+$configProcessor = new \Kaizen\Components\Config\Processor\ConfigProcessor();
 $configProcessor->processConfig($realConfig, $schema);
 ```
 
@@ -94,7 +102,7 @@ There are already enough built-in prototype to satisfy most of the common use ca
 validation, you can create your own by creating a class that implement the `PrototypeInterface`
 
 ```php
-class CustomPrototype implements \App\Components\Config\Schema\Prototype\PrototypeInterface
+class CustomPrototype implements \Kaizen\Components\Config\Schema\Prototype\PrototypeInterface
 {
     public function validateArray(array $array): void
     {
@@ -103,7 +111,7 @@ class CustomPrototype implements \App\Components\Config\Schema\Prototype\Prototy
     }
 }
 
-$customArrayNodePrototype = new \App\Components\Config\Schema\Node\ArrayNode('node key', new CustomPrototype())
+$customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node key', new CustomPrototype())
 ```
 
   #### Built-in prototype :
@@ -111,9 +119,9 @@ $customArrayNodePrototype = new \App\Components\Config\Schema\Node\ArrayNode('no
 
 The shape of the array must respect the types and the order e.g.
 ```php
-$customArrayNodePrototype = new \App\Components\Config\Schema\Node\ArrayNode('node key', new \App\Components\Config\Schema\Prototype\TuplePrototype(
-    \App\Components\Config\Schema\Prototype\TupleTypesEnum::BOOLEAN,
-    \App\Components\Config\Schema\Prototype\TupleTypesEnum::INTEGER,
+$customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node key', new \Kaizen\Components\Config\Schema\Prototype\TuplePrototype(
+    \Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum::BOOLEAN,
+    \Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum::INTEGER,
 ));
 
 // Valid array
@@ -139,9 +147,9 @@ The array should contains only integer
 The array should contain objects e.g.
 
 ```php
-$node = new \App\Components\Config\Schema\Node\ArrayNode('node_key', new \App\Components\Config\Schema\Prototype\ObjectPrototype(
-    new \App\Components\Config\Schema\Node\StringNode('node_sub_key_1'),
-    new \App\Components\Config\Schema\Node\IntegerNode('node_sub_key_2'),
+$node = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node_key', new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(
+    new \Kaizen\Components\Config\Schema\Node\StringNode('node_sub_key_1'),
+    new \Kaizen\Components\Config\Schema\Node\IntegerNode('node_sub_key_2'),
 ))
 
 // Valid array
@@ -156,6 +164,21 @@ $node = new \App\Components\Config\Schema\Node\ArrayNode('node_key', new \App\Co
 [
     ['node_sub_key_1' => true, 'node_sub_key_2' => 123]
 ];
+```
+
+```yaml
+# valid yaml
+node_key:
+  - {node_sub_key_1: value, node_sub_key_2: 123}
+
+# invalid yaml
+node_key:
+  - {node_sub_key_11: value, node_sub_key_2: 123}
+
+# invalid yaml
+node_key:
+  - {node_sub_key_1: true, node_sub_key_2: 123}
+
 ```
 
   - **ScalarPrototype**

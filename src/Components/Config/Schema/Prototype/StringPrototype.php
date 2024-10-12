@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Components\Config\Schema\Prototype;
+namespace Kaizen\Components\Config\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
-class StringPrototype implements ConfigPrototypeInterface
+class StringPrototype extends AbstractPrototype
 {
     public function validatePrototype(array $array): void
     {

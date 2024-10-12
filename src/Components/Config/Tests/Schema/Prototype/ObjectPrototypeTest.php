@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Prototype;
+namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Node\BooleanNode;
-use App\Components\Config\Schema\Node\IntegerNode;
-use App\Components\Config\Schema\Node\ScalarNode;
-use App\Components\Config\Schema\Node\StringNode;
-use App\Components\Config\Schema\Prototype\ObjectPrototype;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Node\ScalarNode;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ObjectPrototypeTest extends TestCase
@@ -34,7 +35,7 @@ class ObjectPrototypeTest extends TestCase
         ]);
     }
 
-    public function testValidateWithDefinedEntries()
+    public function testValidateWithDefinedEntries(): void
     {
         $this->expectNotToPerformAssertions();
 
@@ -51,7 +52,7 @@ class ObjectPrototypeTest extends TestCase
         ]);
     }
 
-    public function invalidValueProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
         yield [[
             ['node1' => true, 'node2' => 'string', 'node3' => true, 'node4' => 123],
@@ -86,8 +87,9 @@ class ObjectPrototypeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidValueProvider
+     * @param array<string, mixed> $value
      */
+    #[DataProvider('invalidValueProvider')]
     public function testWithInvalidValue(array $value): void
     {
         $objectPrototype = new ObjectPrototype(

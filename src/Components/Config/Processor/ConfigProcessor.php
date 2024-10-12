@@ -2,22 +2,42 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Processor;
+namespace Kaizen\Components\Config\Processor;
 
-use App\Components\Config\Exception\ConfigProcessingException;
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Exception\NodeNotFoundException;
-use App\Components\Config\Schema\ConfigSchema;
-use App\Components\Config\Schema\Node\ParentNodeInterface;
+use Kaizen\Components\Config\ConfigInterface;
+use Kaizen\Components\Config\Exception\ConfigProcessingException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\NodeNotFoundException;
+use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Node\ParentNodeInterface;
 
 class ConfigProcessor
 {
     /**
+     * @param array<string, mixed> $config
+     *
      * @throws InvalidNodeTypeException
      * @throws NodeNotFoundException
      * @throws ConfigProcessingException
      */
-    public function processConfig(array &$config, ConfigSchema $schema): void
+    public function processConfig(array &$config, ConfigInterface $configInterface): void
+    {
+        $schema = $configInterface->getConfigSchema();
+
+        $config = $this->doProcess($config, $schema);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     *
+     * @throws InvalidNodeTypeException
+     * @throws NodeNotFoundException
+     * @throws ConfigProcessingException
+     */
+    private function doProcess(array $config, ConfigSchema $schema): array
     {
         $this->assertRequiredNodeArePresent($schema, $config);
         $this->appendDefaultValueForMissingNodes($config, $schema);
@@ -30,16 +50,21 @@ class ConfigProcessor
             }
 
             if ($node instanceof ParentNodeInterface) {
-                $this->processConfig($value, $node->getChildren());
+                $config[$key] = $this->doProcess($value, $node->getChildren());
 
                 continue;
             }
 
-            $value = $node->processValue($value);
+            $config[$key] = $node->processValue($value);
             $node->validateType($value);
         }
+
+        return $config;
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function appendDefaultValueForMissingNodes(array &$config, ConfigSchema $schema): void
     {
         foreach ($schema->getNodes() as $node) {
@@ -50,6 +75,8 @@ class ConfigProcessor
     }
 
     /**
+     * @param array<string, mixed> $config
+     *
      * @throws ConfigProcessingException
      */
     private function assertRequiredNodeArePresent(ConfigSchema $schema, array $config): void

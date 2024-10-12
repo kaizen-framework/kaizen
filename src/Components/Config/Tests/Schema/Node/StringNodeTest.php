@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class StringNodeTest extends TestCase
 {
-    public function testValidateType()
+    public function testValidateType(): void
     {
         $node = new StringNode('string');
         $node->validateType('okok');
@@ -16,7 +17,7 @@ class StringNodeTest extends TestCase
         self::assertEquals('string', $node->getKey());
     }
 
-    public function invalidValueProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
         yield [true];
         yield [123];
@@ -26,8 +27,9 @@ class StringNodeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidValueProvider
+     * @param bool|int|float|object|array<int, mixed> $value
      */
+    #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
         $node = new StringNode('string');

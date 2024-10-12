@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Components\Config\Loader;
+namespace Kaizen\Components\Config\Loader;
 
-use App\Components\Config\Definition\FileConfigDefinition;
+use Kaizen\Components\Config\Definition\FileConfigDefinition;
 
 interface ConfigLoaderInterface
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema;
+namespace Kaizen\Components\Config\Tests\Schema;
 
-use App\Components\Config\Exception\InvalidSchemaException;
-use App\Components\Config\Schema\ConfigSchema;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Node\BooleanNode;
-use App\Components\Config\Schema\Node\IntegerNode;
-use App\Components\Config\Schema\Node\ObjectNode;
-use App\Components\Config\Schema\Node\StringNode;
-use App\Components\Config\Schema\Prototype\ObjectPrototype;
+use Kaizen\Components\Config\Exception\InvalidSchemaException;
+use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
 use PHPUnit\Framework\TestCase;
 
 class ConfigSchemaTest extends TestCase

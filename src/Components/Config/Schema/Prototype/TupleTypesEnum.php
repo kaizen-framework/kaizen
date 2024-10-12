@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Components\Config\Schema\Prototype;
+namespace Kaizen\Components\Config\Schema\Prototype;
 
 enum TupleTypesEnum: string
 {

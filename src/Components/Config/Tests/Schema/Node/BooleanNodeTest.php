@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class BooleanNodeTest extends TestCase
@@ -16,7 +17,7 @@ class BooleanNodeTest extends TestCase
         self::assertEquals('boolean', $node->getKey());
     }
 
-    public function invalidValueProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
         yield [123];
         yield ['test'];
@@ -25,9 +26,7 @@ class BooleanNodeTest extends TestCase
         yield [new \stdClass()];
     }
 
-    /**
-     * @dataProvider invalidValueProvider
-     */
+    #[DataProvider('invalidValueProvider')]
     public function testException(mixed $value): void
     {
         $node = new BooleanNode('boolean');

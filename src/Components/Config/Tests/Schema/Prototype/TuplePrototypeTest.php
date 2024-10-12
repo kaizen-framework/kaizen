@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Prototype;
+namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Prototype\TuplePrototype;
-use App\Components\Config\Schema\Prototype\TupleTypesEnum;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\TuplePrototype;
+use Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TuplePrototypeTest extends TestCase
@@ -38,7 +39,7 @@ class TuplePrototypeTest extends TestCase
         $tupleNode->validateType(['string', 123, true]);
     }
 
-    public function invalidTupleValueProvider(): \Iterator
+    public static function invalidTupleValueProvider(): \Iterator
     {
         yield [[123]];
         yield [['test', 123]];
@@ -50,9 +51,10 @@ class TuplePrototypeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidTupleValueProvider
+     * @param array<int, mixed> $value
      */
-    public function testTupleException(mixed $value): void
+    #[DataProvider('invalidTupleValueProvider')]
+    public function testTupleException(array $value): void
     {
         $tuplePrototype = new TuplePrototype(
             TupleTypesEnum::FLOAT,
@@ -64,9 +66,7 @@ class TuplePrototypeTest extends TestCase
         $tuplePrototype->validatePrototype($value);
     }
 
-    /**
-     * @dataProvider invalidTupleValueProvider
-     */
+    #[DataProvider('invalidTupleValueProvider')]
     public function testTupleExceptionWithArrayNode(mixed $value): void
     {
         $tupleNode = new ArrayNode('tuple', new TuplePrototype(

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ObjectVariableNode;
-use App\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
+use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 use PHPUnit\Framework\TestCase;
 
 class ObjectVariableNodeTest extends TestCase

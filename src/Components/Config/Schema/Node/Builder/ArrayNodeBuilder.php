@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema\Node\Builder;
+namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use App\Components\Config\Schema\ConfigSchemaBuilder;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Node\ObjectVariableNode;
-use App\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
+use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 
 class ArrayNodeBuilder
 {

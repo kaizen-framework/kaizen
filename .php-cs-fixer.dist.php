@@ -7,4 +7,7 @@ return (new PhpCsFixer\Config())->setRules([
     '@PhpCsFixer' => true,
     'array_syntax' => ['syntax' => 'short'],
     'php_unit_test_class_requires_covers' => true,
+    'phpdoc_to_comment' => [
+        'allow_before_return' => true,
+    ],
 ])->setFinder($finder);

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema\Node\Builder;
+namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use App\Components\Config\Schema\ConfigSchemaBuilder;
-use App\Components\Config\Schema\Node\FloatNode;
-use App\Components\Config\Schema\Node\IntegerNode;
-use App\Components\Config\Schema\Node\ScalarNode;
+use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\Node\FloatNode;
+use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Node\ScalarNode;
 
 class ScalarNodeBuilder
 {

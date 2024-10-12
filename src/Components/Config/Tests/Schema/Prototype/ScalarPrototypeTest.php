@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Prototype;
+namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Prototype\ScalarPrototype;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\ScalarPrototype;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ScalarPrototypeTest extends TestCase
 {
-    public function testValidateArray()
+    public function testValidateArray(): void
     {
         self::expectNotToPerformAssertions();
 
@@ -17,7 +18,7 @@ class ScalarPrototypeTest extends TestCase
         $scalarPrototype->validatePrototype([123, 12.3, true, 'string']);
     }
 
-    public function testValidateWithArrayNode()
+    public function testValidateWithArrayNode(): void
     {
         self::expectNotToPerformAssertions();
 
@@ -25,7 +26,7 @@ class ScalarPrototypeTest extends TestCase
         $scalarPrototype->validateType([123, 12.3, true, 'string']);
     }
 
-    public function invalidScalarArrayValueProvider(): \Iterator
+    public static function invalidScalarArrayValueProvider(): \Iterator
     {
         yield [[[]]];
         yield [[new \stdClass()]];
@@ -33,8 +34,9 @@ class ScalarPrototypeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidScalarArrayValueProvider
+     * @param array<int, mixed> $value
      */
+    #[DataProvider('invalidScalarArrayValueProvider')]
     public function testScalarException(array $value): void
     {
         $scalarPrototype = new ScalarPrototype();
@@ -44,8 +46,9 @@ class ScalarPrototypeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidScalarArrayValueProvider
+     * @param array<int, mixed> $value
      */
+    #[DataProvider('invalidScalarArrayValueProvider')]
     public function testScalarExceptionWithArrayNode(array $value): void
     {
         $scalarArrayNode = new ArrayNode('node', new ScalarPrototype());

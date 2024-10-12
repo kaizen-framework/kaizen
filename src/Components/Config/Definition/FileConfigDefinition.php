@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Definition;
+namespace Kaizen\Components\Config\Definition;
 
 class FileConfigDefinition
 {

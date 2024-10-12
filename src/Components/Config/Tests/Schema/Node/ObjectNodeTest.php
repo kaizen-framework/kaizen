@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\ConfigSchema;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Node\IntegerNode;
-use App\Components\Config\Schema\Node\StringNode;
-use App\Components\Config\Schema\Node\ObjectNode;
-use App\Components\Config\Schema\Prototype\ObjectPrototype;
-use App\Components\Config\Schema\Prototype\TuplePrototype;
-use App\Components\Config\Schema\Prototype\TupleTypesEnum;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
+use Kaizen\Components\Config\Schema\Prototype\TuplePrototype;
+use Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ObjectNodeTest extends TestCase
@@ -47,7 +48,7 @@ class ObjectNodeTest extends TestCase
         self::assertEquals('object', $node->getKey());
     }
 
-    public function invalidValueProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
         yield [[
             'tuple_array' => ['string', true],
@@ -96,8 +97,9 @@ class ObjectNodeTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidValueProvider
+     * @param array<string, mixed> $value
      */
+    #[DataProvider('invalidValueProvider')]
     public function testException(array $value): void
     {
         $node = new ObjectNode('object', new ConfigSchema(

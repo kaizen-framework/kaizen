@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Components\Config\Schema\Prototype;
+namespace Kaizen\Components\Config\Schema\Prototype;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\ConfigSchema;
-use App\Components\Config\Schema\Node\NodeInterface;
-use App\Components\Config\Schema\NodeFinder;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
 
-class ObjectPrototype implements ConfigPrototypeInterface
+class ObjectPrototype extends AbstractPrototype
 {
     private ?ConfigSchema $prototypeSchema;
 
@@ -29,6 +28,39 @@ class ObjectPrototype implements ConfigPrototypeInterface
 
             $this->validateObject($item);
         }
+    }
+
+    /**
+     * @param array<string, mixed> $array
+     *
+     * @return array<string, mixed>
+     */
+    #[\Override]
+    public function processPrototype(array $array): array
+    {
+        foreach ($array as $key => $value) {
+            $array[$key] = $this->processPrototypeValue($value);
+        }
+
+        return $array;
+    }
+
+    /**
+     * @param array<string, mixed> $array
+     *
+     * @return array<string, mixed>
+     */
+    private function processPrototypeValue(array $array): array
+    {
+        $this->appendDefaultValueForMissingNodes($array);
+
+        foreach ($array as $key => $value) {
+            $node = $this->prototypeSchema->getNode($key);
+
+            $array[$key] = $node->processValue($value);
+        }
+
+        return $array;
     }
 
     /**
@@ -60,6 +92,18 @@ class ObjectPrototype implements ConfigPrototypeInterface
             }
 
             $node->validateType($value);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function appendDefaultValueForMissingNodes(array &$config): void
+    {
+        foreach ($this->prototypeSchema->getNodes() as $node) {
+            if (!array_key_exists($node->getKey(), $config) && null !== $defaultValue = $node->getDefaultValue()) {
+                $config[$node->getKey()] = $defaultValue;
+            }
         }
     }
 }

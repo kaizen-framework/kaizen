@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema\Node;
+namespace Kaizen\Components\Config\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 
 class FloatNode extends NumericNode
 {

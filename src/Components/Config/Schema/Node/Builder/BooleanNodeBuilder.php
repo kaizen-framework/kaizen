@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Schema\Node\Builder;
+namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use App\Components\Config\Schema\ConfigSchemaBuilder;
-use App\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
 
 class BooleanNodeBuilder
 {

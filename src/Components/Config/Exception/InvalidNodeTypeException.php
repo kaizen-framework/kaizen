@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Exception;
+namespace Kaizen\Components\Config\Exception;
 
 class InvalidNodeTypeException extends \Exception
 {

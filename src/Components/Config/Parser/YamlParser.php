@@ -2,57 +2,93 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Config\Parser;
+namespace Kaizen\Components\Config\Parser;
 
-use App\Components\Config\Exception\InvalidPathException;
-use App\Components\Config\Exception\ParseConfigException;
-use App\Components\Config\Schema\ConfigSchemaBuilderInterface;
+use Kaizen\Components\Config\Exception\InvalidFormatException;
+use Kaizen\Components\Config\Exception\ParsingException;
 
-class YamlParser implements ConfigParserInterface
+class YamlParser implements ParserInterface
 {
-    /**
-     * @throws InvalidPathException
-     */
-    public function parseFromFile(string $path, ?ConfigSchemaBuilderInterface $schema = null): array
-    {   // todo juste load yaml and separate config schema to use a builder pattern to build the validation schema in this way:
-        // $builder->children()->scalarNode()->
-        try {
-            $yaml = yaml_parse_file($path);
-        } catch (\Exception) {
-            throw new InvalidPathException(sprintf('"%s" is not a valid path', $path));
-        }
-        
-        if ($schema) {
-            $this->validateSchema($yaml, $schema);
+    public function parse(string $fileContent): array
+    {
+        /** @var array<string, mixed>|false $yaml */
+        $yaml = @yaml_parse($fileContent, 0, $nbDocs, callbacks: [
+            '!php/const' => $this->parseTags(...),
+        ]);
+
+        if (false === $yaml) {
+            $error = error_get_last();
+
+            if (null === $error) {
+                throw new \RuntimeException('Unexpected error happen while parsing configuration file.');
+            }
+
+            throw new InvalidFormatException($error['message']);
         }
 
         return $yaml;
     }
 
-    private function validateSchema(array $yaml, ConfigSchemaBuilderInterface $schema): void
+    public function supports(string $path): bool
     {
-        /*
-        $yaml = [
-            'services' => [
-                '_default' => [
-                    'autowire' => true
-                ]
-            ]
-        ];
-         */
-        $schemaArray = $schema->schema();
-        /* $schemaArray = [
-            'services' => [
-                '_default' => [
-                    'autowire' => 'boolean'
-                ]
-            ]
-        ];*/
+        return file_exists($path) && in_array(pathinfo($path, PATHINFO_EXTENSION), ['yml', 'yaml']);
+    }
 
-        foreach ($yaml as $key => $value) {
-            if (is_array($value)) {
-                $this->validateSchema($value, $schema);
+    /**
+     * @return array<int|string, mixed>|int|float|string|bool|null
+     *
+     * @throws ParsingException
+     */
+    private function parseTags(string $value, string $tag, string $flag): array|int|float|string|bool|null
+    {
+        [0 => $class, 1 => $constant] = explode('::', $value);
+
+        if (enum_exists($class)) {
+            if (!defined($value)) {
+                throw new ParsingException(sprintf(
+                    'Case "%s" does not exist in enum "%s".',
+                    $class,
+                    $constant
+                ));
             }
+
+            /** @phpstan-ignore-next-line All checks are already performed so it will not throw error */
+            $constValue = constant($value)->value;
         }
+
+        if (
+            !isset($constValue)
+            && (class_exists($class) || interface_exists($class))
+        ) {
+            if (!defined($value)) {
+                throw new ParsingException(sprintf(
+                    'Constant "%s" does not exist in class "%s".',
+                    $class,
+                    $constant
+                ));
+            }
+
+            $constValue = constant($value);
+        }
+
+        if (!isset($constValue)) {
+            throw new ParsingException(sprintf(
+                'Class, enum or interface "%s" does not exist, for the tag "%s" with value "%s"',
+                $class,
+                $tag,
+                $value
+            ));
+        }
+
+        $constValueType = gettype($constValue);
+
+        if (!in_array($constValueType, ['string', 'int', 'float', 'bool', 'null', 'array'])) {
+            throw new ParsingException(sprintf(
+                'Constant "%s" does not have a proper type',
+                $value
+            ));
+        }
+
+        return $constValue;
     }
 }

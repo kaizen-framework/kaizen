@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Components\Config\Tests\Schema\Node;
+namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use App\Components\Config\Exception\InvalidNodeTypeException;
-use App\Components\Config\Schema\Node\ArrayNode;
-use App\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ArrayNodeTest extends TestCase
@@ -18,7 +19,7 @@ class ArrayNodeTest extends TestCase
         self::assertEquals('array', $node->getKey());
     }
 
-    public function invalidValuesProvider(): \Iterator
+    public static function invalidValuesProvider(): \Iterator
     {
         yield [123];
         yield [12.3];
@@ -26,9 +27,7 @@ class ArrayNodeTest extends TestCase
         yield [true];
     }
 
-    /**
-     * @dataProvider invalidValuesProvider
-     */
+    #[DataProvider('invalidValuesProvider')]
     public function testWithInvalidValue(mixed $value): void
     {
         $node = new ArrayNode('array');
