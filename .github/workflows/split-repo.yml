@@ -16,6 +16,9 @@ jobs:
           -
             local_path: 'Components/Config'
             split_repository: 'config'
+          -
+            local_path: 'Components/Finder'
+            split_repository: 'finder'
 
     env:
       GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
