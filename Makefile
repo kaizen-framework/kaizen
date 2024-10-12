@@ -17,6 +17,8 @@ tests: ## Run phpunit tests suit of all components
 
 merge-monorepo: ## Merge the composer.json files of the components into the main one
 	$(RUN) vendor/bin/monorepo-builder merge
+	@echo Update the lock file
+	$(RUN) composer update --lock
 
 qa: ## Run all the code quality analyse
 	@echo Run cs fixer

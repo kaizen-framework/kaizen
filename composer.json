@@ -37,8 +37,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Kaizen\\Components\\Finder\\Tests\\": "src/Components/Finder/Tests/",
-            "Kaizen\\Components\\Config\\Tests\\": "src/Components/Config/Tests/"
+            "Kaizen\\Components\\Config\\Tests\\": "src/Components/Config/Tests/",
+            "Kaizen\\Components\\Finder\\Tests\\": "src/Components/Finder/Tests/"
         }
     }
 }
