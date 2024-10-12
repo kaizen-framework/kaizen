@@ -1,22 +1,21 @@
-# Config component
+# Config Component
 
-The config component allow to build a schema that represent the configuration of your application with a validation of
-type and rules (required, default value, etc.)
+The Config component allows you to build a schema that represents your application's configuration with validation for
+types and rules (required fields, default values, etc.).
 
 ## Usage
 
 To create your schema you need to create a class that implement the `ConfigInterface`.
 
-You can use the `ConfigSchemaBuilder`, it allow to build your schema with methods that represent
-the different node and their rules validations e.g.
+You can use the `ConfigSchemaBuilder` to construct your schema with methods that represent different nodes and their validation rules. For example:`
 
 ```php
 class Configuration implements \Kaizen\Components\Config\ConfigInterface
 {
-    public function getConfigSchema(): \Kaizen\Components\Config\Schema\ConfigSchema 
+    public function getConfigSchema(): \Kaizen\Components\Config\Schema\ConfigSchema
     {
         $schemaBuilder = new \Kaizen\Components\Config\Schema\ConfigSchemaBuilder();
-        
+
         $schema = $schemaBuilder
             ->boolean('booleanNode')
                 ->required()
@@ -50,7 +49,7 @@ class Configuration implements \Kaizen\Components\Config\ConfigInterface
 }
 ```
 
-with this example let's take a yaml config that satisfies this schema :
+Let's take a YAML config that satisfies this schema:
 
 ```yaml
 booleanNode: true
@@ -61,101 +60,98 @@ arrayNode: # Or arrayNode: [1,2,3]
   - 3
 arrayObjectNode:
   - {arrayObjectStringNode: a string, arrayObjectBooleanNode: false}
-  - {arrayObjectStringNode: an other string, arrayObjectBooleanNode: true}
-  # ...
+  - {arrayObjectStringNode: another string, arrayObjectBooleanNode: true}
+# ...
 objectNode:
   childFloatNode: 5.5
   childStringNode: a string
 ```
 
-Then use the `ConfigLocator` to locate your config files, e.g.
+To locate your config files, use the `ConfigLocator`:
 
 ```php
-// The second argument is an array of parser that allow to transform the loaded file into an exploitable php array
+// The second argument is an array of parsers that transform the loaded file into a usable PHP array
 $configLocator = new ConfigLocator('root/path/of/the/config/files', [new \Kaizen\Components\Config\Parser\YamlParser()]);
-
 $config = $configLocator->locate('some_file.yaml');
 ```
 
-> **Make sure to load only files that are supported by the parser you put into the Config locator constructor**
+> **Note:** Make sure to load only files that are supported by the parsers you've added to the Config locator constructor.
 
-For the moment the only parser available is for yaml, however you can create your own parser by create a class that
-implement the `ParserInterface` e.g.
+Currently, only a YAML parser is available. However, you can create your own parser by implementing the `ParserInterface`:
 
 ```php
 class CustomParser implements \Kaizen\Components\Config\Parser\ParserInterface
 {
-    public function parse(string $fileContent) : array
+    public function parse(string $fileContent): array
     {
-        // logic to parse your document
+        // Logic to parse your document
     }
-    
-    public function supports(string $path) : bool
+
+    public function supports(string $path): bool
     {
-        // Check weather the parser should parse your file or not
+        // Check whether the parser should parse your file or not
         return pathinfo($path, PATHINFO_EXTENSION) === 'desired.extension';
     }
 }
 ```
 
-Once your schema is built you can use the `ConfigProcessor` To validate your schema
+Once your schema is built, use the `ConfigProcessor` to validate it:
 
 ```php
 $configProcessor = new \Kaizen\Components\Config\Processor\ConfigProcessor();
 $configProcessor->processConfig($config, new Configuration());
 ```
 
-The processor will set the default value check for the rules and so on.
+The processor will set default values and check the rules. Your configuration is now extracted and validated!`
 
-That's it ! your configuration is now extracted and validated
+## Nodes
 
-- ## Nodes
+  - scalarNode (int, float, boolean, string, null)
+  - numericNode (int, float)
+  - intNode
+  - floatNode
+  - stringNode
+  - booleanNode
+  - numberNode (int and float)
+  - enumNode
+  - arrayNode (can include prototype to define the shape)
 
-    - scalarNode (int, float, boolean, string, null)
-    - numericNode (int, float)
-    - intNode
-    - floatNode
-    - stringNode
-    - booleanNode
-    - numberNode (int and float)
-    - enumNode
-    - arrayNode (can include prototype to define the shape c.f. )
+### Prototypes
 
-- ### The prototypes
-
-The prototype allow to define a shape that determine which values are expected in an iterable node e.g.
+Prototypes define the expected values in an iterable node. For example:
 
 ```php
 $node = new ArrayNode('node key', new ScalarPrototype());
 ```
 
-This way the values in the array can only be scalar.
+This ensures the array contains only scalar values.
 
-There are already enough built-in prototype to satisfy most of the common use cases, however if you need custom 
-validation, you can create your own by creating a class that implement the `PrototypeInterface`
+While there are built-in prototypes for common use cases, you can create custom validations by implementing the `PrototypeInterface`:
 
 ```php
 class CustomPrototype implements \Kaizen\Components\Config\Schema\Prototype\PrototypeInterface
 {
     public function validateArray(array $array): void
     {
-        // perform your custom validation
-        // throw an InvalidNodeTypeException if the conditions are not met
+        // Perform your custom validation
+        // Throw an InvalidNodeTypeException if conditions are not met
     }
 }
 
-$customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node key', new CustomPrototype())
+$customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node key', new CustomPrototype());
 ```
 
-  #### Built-in prototype :
-  - **TuplePrototype**
+#### Built-in Prototypes:
 
-The shape of the array must respect the types and the order e.g.
+- **TuplePrototype**: The array must respect specific types and order
 ```php
-$customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node key', new \Kaizen\Components\Config\Schema\Prototype\TuplePrototype(
+$customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode(
+  'node key',
+  new \Kaizen\Components\Config\Schema\Prototype\TuplePrototype(
     \Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum::BOOLEAN,
     \Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum::INTEGER,
-));
+  )
+);
 
 // Valid array
 [true, 123]
@@ -167,23 +163,19 @@ $customArrayNodePrototype = new \Kaizen\Components\Config\Schema\Node\ArrayNode(
 [true, true]
 ```
 
-  - **StringPrototype** 
+- **StringPrototype**: The array should contain only strings
 
-The array should contain only strings
+- **IntegerPrototype**: The array should contain only integers
 
-  - **IntegerPrototype**
-
-The array should contains only integer
-
-  - **ObjectPrototype**
-
-The array should contain objects e.g.
-
+- **ObjectPrototype**: The array should contain objects
 ```php
-$node = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node_key', new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(
-    new \Kaizen\Components\Config\Schema\Node\StringNode('node_sub_key_1'),
-    new \Kaizen\Components\Config\Schema\Node\IntegerNode('node_sub_key_2'),
-))
+$node = new \Kaizen\Components\Config\Schema\Node\ArrayNode(
+    'node_key',
+    new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(
+        new \Kaizen\Components\Config\Schema\Node\StringNode('node_sub_key_1'),
+        new \Kaizen\Components\Config\Schema\Node\IntegerNode('node_sub_key_2'),
+    )
+);
 
 // Valid array
 [
@@ -200,21 +192,18 @@ $node = new \Kaizen\Components\Config\Schema\Node\ArrayNode('node_key', new \Kai
 ```
 
 ```yaml
-# valid yaml
+# Valid YAML
 node_key:
   - {node_sub_key_1: value, node_sub_key_2: 123}
 
-# invalid yaml
+# Invalid YAML
 node_key:
   - {node_sub_key_11: value, node_sub_key_2: 123}
 
-# invalid yaml
+# Invalid YAML
 node_key:
   - {node_sub_key_1: true, node_sub_key_2: 123}
 
 ```
 
-  - **ScalarPrototype**
-
-The array should contain only scalar values (string, integer, boolean, float, null)
-
+- **ScalarPrototype**: The array should contain only scalar values (string, integer, boolean, float, null)`
