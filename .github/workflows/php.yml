@@ -57,4 +57,5 @@ jobs:
       - name: Run rector
         run: $DOCKER_EXEC ./vendor/bin/rector process --dry-run --config=rector.php
 
-      # TODO add tests suite running
+      - name: Run phpunit tests suit
+        run: $DOCKER_EXEC ./vendor/bin/phpunit --no-logging -c phpunit.xml src/Components/**/Tests
