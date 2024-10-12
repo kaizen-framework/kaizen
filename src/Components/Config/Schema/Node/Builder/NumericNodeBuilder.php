@@ -62,7 +62,7 @@ class NumericNodeBuilder
             $numericNode->max($this->max);
         }
 
-        if ($this->defaultValue !== null) {
+        if (null !== $this->defaultValue) {
             $numericNode->defaultValue($this->defaultValue);
         }
 

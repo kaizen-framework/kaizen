@@ -62,7 +62,7 @@ class IntegerNodeBuilder
             $integerNode->max($this->max);
         }
 
-        if ($this->defaultValue !== null) {
+        if (null !== $this->defaultValue) {
             $integerNode->defaultValue($this->defaultValue);
         }
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Processor;
 
-use Kaizen\Components\Config\Schema\Node\NodeInterface;
 use Kaizen\Components\Config\ConfigInterface;
 use Kaizen\Components\Config\Exception\ConfigProcessingException;
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Exception\NodeNotFoundException;
 use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Schema\Node\NodeInterface;
 use Kaizen\Components\Config\Schema\Node\ParentNodeInterface;
 
 class ConfigProcessor

@@ -17,7 +17,7 @@ class ObjectPrototype extends AbstractPrototype
     public function __construct(
         Node ...$node,
     ) {
-        $this->configSchema = $node === [] ? null : new ConfigSchema(...$node);
+        $this->configSchema = [] === $node ? null : new ConfigSchema(...$node);
     }
 
     #[\Override]
@@ -83,7 +83,7 @@ class ObjectPrototype extends AbstractPrototype
      */
     private function validateObject(array $object): void
     {
-        if ($object === []) {
+        if ([] === $object) {
             throw new InvalidNodeTypeException('Empty object are not allowed');
         }
 

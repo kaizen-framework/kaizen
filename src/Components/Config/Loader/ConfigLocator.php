@@ -55,7 +55,7 @@ readonly class ConfigLocator
             }
         }
 
-        if ($parsers === []) {
+        if ([] === $parsers) {
             throw new ParsingException(sprintf(
                 'None of the parsers provided are able to support the "%s" file',
                 $filePath
