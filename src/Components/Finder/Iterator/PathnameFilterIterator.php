@@ -7,10 +7,11 @@ namespace Kaizen\Components\Finder\Iterator;
 use Kaizen\Components\Finder\Utils\SplFileInfo;
 
 /**
- * @extends FilterIterator<string, SplFileInfo>
+ * @template-extends FilterIterator<string, SplFileInfo>
  */
 class PathnameFilterIterator extends FilterIterator
 {
+    #[\Override]
     public function accept(): bool
     {
         $filename = $this->currentValue()->getRelativePath();

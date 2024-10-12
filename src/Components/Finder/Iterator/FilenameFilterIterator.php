@@ -11,6 +11,7 @@ use Kaizen\Components\Finder\Utils\SplFileInfo;
  */
 class FilenameFilterIterator extends FilterIterator
 {
+    #[\Override]
     public function accept(): bool
     {
         return $this->isAccepted($this->currentValue()->getFilename());

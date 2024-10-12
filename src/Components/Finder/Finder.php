@@ -8,17 +8,22 @@ use Kaizen\Components\Finder\Exception\DirectoryNotFoundException;
 use Kaizen\Components\Finder\Iterator\FilenameFilterIterator;
 use Kaizen\Components\Finder\Iterator\PathnameFilterIterator;
 use Kaizen\Components\Finder\Iterator\RecursiveDirectoryIterator;
+use Kaizen\Components\Finder\Utils\SplFileInfo;
 
 class Finder
 {
     /** @var string[] */
     private array $dirs = [];
+
     /** @var string[] */
     private array $filesNames = [];
+
     /** @var string[] */
     private array $notFilesNames = [];
+
     /** @var string[] */
     private array $excludedPath = [];
+
     /** @var string[] */
     private array $mandatoryPaths = [];
 
@@ -29,19 +34,23 @@ class Finder
      *
      * @throws DirectoryNotFoundException
      */
-    public function in(string|array $paths): self
+    public function in(array|string $paths): self
     {
         $resolvedDirs = [];
 
         foreach ((array) $paths as $path) {
             if (is_dir($path)) {
                 $resolvedDirs[] = [$path];
+
                 continue;
-            } elseif ($glob = glob(
+            }
+
+            if ($glob = glob(
                 $path,
                 (\defined('GLOB_BRACE') ? \GLOB_BRACE : 0) | \GLOB_ONLYDIR | \GLOB_NOSORT
             )) {
                 $resolvedDirs[] = $glob;
+
                 continue;
             }
 
@@ -54,7 +63,7 @@ class Finder
     }
 
     /**
-     * Add rules that files must match, it can be either a glob patter or a regex
+     * Add rules that files must match, it can be either a glob patter or a regex.
      *
      * example:
      *
@@ -64,63 +73,49 @@ class Finder
      *
      * @param string|string[] $filesNames
      */
-    public function fileName(string|array $filesNames): self
+    public function fileName(array|string $filesNames): self
     {
         $this->filesNames = (array) $filesNames;
 
         return $this;
     }
 
-    public function notFilename(string|array $notFileNames): self
+    /**
+     * @param string|string[] $notFileNames
+     */
+    public function notFilename(array|string $notFileNames): self
     {
         $this->notFilesNames = array_merge($this->notFilesNames, (array) $notFileNames);
 
         return $this;
     }
 
-    public function exclude(string|array $dirs): self
+    /**
+     * @param string|string[] $dirs
+     */
+    public function exclude(array|string $dirs): self
     {
         $this->excludedPath = array_merge($this->excludedPath, (array) $dirs);
 
         return $this;
     }
 
-    public function mandatoryPath(string|array $paths): self
+    /**
+     * @param string|string[] $paths
+     */
+    public function mandatoryPath(array|string $paths): self
     {
         $this->mandatoryPaths = array_merge($this->mandatoryPaths, (array) $paths);
 
         return $this;
     }
 
-
     /**
-     * Search recursively into all the directories provided with "in()" method
-     *
-     * @return \Iterator<int, \SplFileInfo> Return an iterator with all found directories as SplFileInfo object
-     */
-    private function searchInDirectory(string $dir): \Iterator
-    {
-
-        $iterator = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-        $iterator = new \RecursiveIteratorIterator($iterator);
-
-        if (!empty($this->filesNames) || !empty($this->notFilesNames)) {
-            $iterator = new FilenameFilterIterator($iterator, $this->filesNames, $this->notFilesNames);
-        }
-
-        if (!empty($this->excludedPath) || !empty($this->mandatoryPaths)) {
-            $iterator = new PathnameFilterIterator($iterator, $this->mandatoryPaths, $this->excludedPath);
-        }
-
-        return $iterator;
-    }
-
-    /**
-     * @return \Iterator<int, \SplFileInfo>
+     * @return \Iterator<string, \SplFileInfo>
      */
     public function getIterator(): \Iterator
     {
-        if (count($this->dirs) === 0) {
+        if ([] === $this->dirs) {
             throw new \LogicException('You must call one of in() method before iterating over a Finder.');
         }
 
@@ -128,6 +123,27 @@ class Finder
 
         foreach ($this->dirs as $dir) {
             $iterator->append($this->searchInDirectory($dir));
+        }
+
+        return $iterator;
+    }
+
+    /**
+     * Search recursively into all the directories provided with "in()" method.
+     *
+     * @return \Iterator<string, SplFileInfo> Return an iterator with all found directories as SplFileInfo object
+     */
+    private function searchInDirectory(string $dir): \Iterator
+    {
+        $iterator = new RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS);
+        $iterator = new \RecursiveIteratorIterator($iterator);
+
+        if ([] !== $this->filesNames || [] !== $this->notFilesNames) {
+            $iterator = new FilenameFilterIterator($iterator, $this->filesNames, $this->notFilesNames);
+        }
+
+        if ([] !== $this->excludedPath || [] !== $this->mandatoryPaths) {
+            return new PathnameFilterIterator($iterator, $this->mandatoryPaths, $this->excludedPath);
         }
 
         return $iterator;

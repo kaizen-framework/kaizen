@@ -27,10 +27,7 @@ class FinderTest extends TestCase
     {
         $finder = new Finder();
 
-        self::assertInstanceOf(
-            \Iterator::class,
-            $finder->in(__DIR__.DIRECTORY_SEPARATOR.'DataFixtures/TestScanDirectory')->getIterator()
-        );
+        $this->assertInstanceOf(\Iterator::class, $finder->in(__DIR__.DIRECTORY_SEPARATOR.'DataFixtures/TestScanDirectory')->getIterator());
     }
 
     public function testHasExceptionOnDirectoryNotFound(): void
@@ -43,12 +40,11 @@ class FinderTest extends TestCase
     }
 
     /**
-     * @param string|string[] $path
      * @param string|string[] $fileName
      * @param \SplFileInfo[]  $expected
      */
     #[DataProvider('pathToFilesProvider')]
-    public function testIteratorHasFiles(array|string $path, array|string $fileName, array $expected): void
+    public function testIteratorHasFiles(string $path, array|string $fileName, array $expected): void
     {
         $finder = new Finder();
         $finder->in(__DIR__.DIRECTORY_SEPARATOR.$path);
@@ -126,7 +122,7 @@ class FinderTest extends TestCase
     {
         $reg = RegexHelper::globToRegex($glob);
 
-        self::assertSame($expected, $reg);
+        $this->assertSame($expected, $reg);
     }
 
     public static function pathToFilesProvider(): \Iterator
@@ -204,23 +200,23 @@ class FinderTest extends TestCase
 
     /**
      * @param \Iterator<\SplFileInfo> $iterator
-     * @param \SplFileInfo[] $expected
+     * @param \SplFileInfo[]          $expected
      */
     private function assertIterator(\Iterator $iterator, array $expected): void
     {
         $expectedResults = array_map(
-            fn (\SplFileInfo $fileInfo) => str_replace('/', DIRECTORY_SEPARATOR, $fileInfo->getPathname()),
+            static fn (\SplFileInfo $fileInfo): string => str_replace('/', DIRECTORY_SEPARATOR, $fileInfo->getPathname()),
             $expected
         );
 
         $actualValues = array_map(
-            fn (\SplFileInfo $fileInfo) => str_replace('/', DIRECTORY_SEPARATOR, $fileInfo->getPathname()),
+            static fn (\SplFileInfo $fileInfo): string => str_replace('/', DIRECTORY_SEPARATOR, $fileInfo->getPathname()),
             iterator_to_array($iterator)
         );
 
         sort($expectedResults);
         sort($actualValues);
 
-        self::assertSame($expectedResults, $actualValues);
+        $this->assertSame($expectedResults, $actualValues);
     }
 }

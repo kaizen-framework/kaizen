@@ -11,18 +11,20 @@ class RegexHelper
      */
     public static function isRegex(string $str): bool
     {
-        $availableModifiers = 'imsxuADU';
-
-        if (\PHP_VERSION_ID >= 80200) {
-            $availableModifiers .= 'n';
-        }
+        $availableModifiers = 'nimsxuADU';
 
         if (preg_match('/^(.{3,}?)['.$availableModifiers.']*$/', $str, $m)) {
             $start = substr($m[1], 0, 1);
             $end = substr($m[1], -1);
 
             if ($start === $end) {
-                return !preg_match('/[*?[:alnum:] \\\]/', $start);
+                $matchResult = preg_match('/[*?[:alnum:] \\\]/', $start);
+
+                if (false === $matchResult) {
+                    throw new \RuntimeException('NEVER');
+                }
+
+                return 0 === $matchResult;
             }
 
             foreach ([['{', '}'], ['(', ')'], ['[', ']'], ['<', '>']] as $delimiters) {

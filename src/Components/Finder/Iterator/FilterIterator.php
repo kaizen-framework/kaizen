@@ -11,7 +11,7 @@ use Kaizen\Components\Finder\Utils\RegexHelper;
  * @template-covariant TKey
  * @template-covariant TValue
  *
- * @extends \FilterIterator<TKey, TValue>
+ * @template-extends \FilterIterator<TKey, TValue, \Iterator<TKey, TValue>>
  */
 abstract class FilterIterator extends \FilterIterator
 {
@@ -38,23 +38,23 @@ abstract class FilterIterator extends \FilterIterator
 
     protected function isAccepted(string $name): bool
     {
-        foreach ($this->noMatchRegexps as $noMatchPattern) {
-            if (!RegexHelper::isRegex($noMatchPattern)) {
-                $noMatchPattern = RegexHelper::globToRegex($noMatchPattern);
+        foreach ($this->noMatchRegexps as $noMatchRegexp) {
+            if (!RegexHelper::isRegex($noMatchRegexp)) {
+                $noMatchRegexp = RegexHelper::globToRegex($noMatchRegexp);
             }
 
-            if (preg_match($noMatchPattern, $name)) {
+            if (preg_match($noMatchRegexp, $name)) {
                 return false;
             }
         }
 
-        if ($this->matchRegexps) {
-            foreach ($this->matchRegexps as $matchPattern) {
-                if (!RegexHelper::isRegex($matchPattern)) {
-                    $matchPattern = RegexHelper::globToRegex($matchPattern);
+        if ([] !== $this->matchRegexps) {
+            foreach ($this->matchRegexps as $matchRegexp) {
+                if (!RegexHelper::isRegex($matchRegexp)) {
+                    $matchRegexp = RegexHelper::globToRegex($matchRegexp);
                 }
 
-                if (preg_match($matchPattern, $name)) {
+                if (preg_match($matchRegexp, $name)) {
                     return true;
                 }
             }
