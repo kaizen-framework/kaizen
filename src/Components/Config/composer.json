@@ -1,5 +1,6 @@
 {
     "name": "kaizen/config",
+    "type": "library",
     "autoload": {
         "psr-4": {
             "Kaizen\\Components\\Config\\": ""
