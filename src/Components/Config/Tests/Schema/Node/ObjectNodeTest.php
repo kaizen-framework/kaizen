@@ -13,9 +13,9 @@ use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
 use Kaizen\Components\Config\Schema\Prototype\TuplePrototype;
 use Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * @internal

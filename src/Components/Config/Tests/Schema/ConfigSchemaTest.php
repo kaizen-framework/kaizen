@@ -10,8 +10,8 @@ use Kaizen\Components\Config\Schema\Node\IntegerNode;
 use Kaizen\Components\Config\Schema\Node\ObjectNode;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal

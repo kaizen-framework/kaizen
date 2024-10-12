@@ -7,8 +7,8 @@ use Kaizen\Components\Config\Exception\ParsingException;
 use Kaizen\Components\Config\Exception\ResourceNotFoundException;
 use Kaizen\Components\Config\Loader\ConfigLocator;
 use Kaizen\Components\Config\Parser\YamlParser;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal

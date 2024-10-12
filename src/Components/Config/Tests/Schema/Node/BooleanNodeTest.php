@@ -4,9 +4,9 @@ namespace Kaizen\Components\Config\Tests\Schema\Node;
 
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * @internal

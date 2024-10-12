@@ -5,9 +5,9 @@ namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\ArrayNode;
 use Kaizen\Components\Config\Schema\Prototype\IntegerPrototype;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * @internal

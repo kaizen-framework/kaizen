@@ -7,8 +7,8 @@ namespace Kaizen\Components\Config\Tests\Schema\Node;
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
 use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal

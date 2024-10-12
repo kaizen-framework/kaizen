@@ -7,9 +7,9 @@ namespace Kaizen\Components\Config\Tests\Parser;
 use Kaizen\Components\Config\Exception\InvalidFormatException;
 use Kaizen\Components\Config\Exception\ParsingException;
 use Kaizen\Components\Config\Parser\YamlParser;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * @internal
