@@ -12,12 +12,12 @@ use Kaizen\Components\Config\Schema\Node\Builder\IntegerNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\ObjectVariableNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\ScalarNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\StringNodeBuilder;
-use Kaizen\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\ObjectNode;
 
 class ConfigSchemaBuilder
 {
-    /** @var NodeInterface[] */
+    /** @var Node[] */
     private array $nodes = [];
 
     public function __construct(
@@ -65,22 +65,39 @@ class ConfigSchemaBuilder
         return new self($this, $key);
     }
 
-    public function add(NodeInterface $node): void
+    public function add(Node $node): void
     {
         $this->nodes[] = $node;
+    }
+
+    public function buildChildNode(): self
+    {
+        $schema = new ConfigSchema(...$this->nodes);
+
+        if (!$this->parent || !$this->key) {
+            throw new \LogicException(sprintf(
+                'method "%s::buildChildNode()" can not be called outside a child node.',
+                self::class
+            ));
+        }
+
+        $this->parent->add(new ObjectNode($this->key, $schema));
+
+        return $this->parent;
     }
 
     /**
      * @throws InvalidSchemaException
      */
-    public function build(): ConfigSchema|self
+    public function build(): ConfigSchema
     {
         $schema = new ConfigSchema(...$this->nodes);
 
-        if ($this->parent) {
-            $this->parent->add(new ObjectNode($this->key, $schema));
-
-            return $this->parent;
+        if ($this->parent && $this->key) {
+            throw new \LogicException(sprintf(
+                'method "%s::build()" can not be called for the root node.',
+                self::class
+            ));
         }
 
         return $schema;

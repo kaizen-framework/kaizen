@@ -80,15 +80,14 @@ class YamlParser implements ParserInterface
             ));
         }
 
-        $constValueType = gettype($constValue);
-
-        if (!in_array($constValueType, ['string', 'int', 'float', 'bool', 'null', 'array'])) {
+        if (!in_array(gettype($constValue), ['string', 'int', 'float', 'bool', 'null', 'array', 'NULL'])) {
             throw new ParsingException(sprintf(
                 'Constant "%s" does not have a proper type',
                 $value
             ));
         }
 
+        /** @var null|array<int|string, mixed>|scalar */
         return $constValue;
     }
 }

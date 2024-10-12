@@ -218,7 +218,8 @@ class ConfigProcessorTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param array<string, mixed>     $config
+     * @param class-string<\Throwable> $exceptionClass
      */
     #[DataProvider('invalidConfigProvider')]
     public function testWithInvalidConfig(array $config, string $exceptionClass): void

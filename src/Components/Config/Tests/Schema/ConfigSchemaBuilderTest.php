@@ -48,7 +48,7 @@ class ConfigSchemaBuilderTest extends TestCase
             ->defaultValue('default_scalar')
             ->buildNode()
             ->boolean('boolean')->buildNode()
-            ->build()
+            ->buildChildNode()
             ->objectVariable('objectVariable')
             ->withPrototype(new StringPrototype())
             ->buildNode()

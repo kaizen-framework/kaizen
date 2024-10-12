@@ -95,6 +95,7 @@ class YamlParserTest extends TestCase
     #[DataProvider('fileProvider')]
     public function testSupportsFile(string $file, bool $expectedResult): void
     {
+        /** @var string $path */
         $path = realpath(sprintf(
             '%1$s%2$s..%2$sFixtures%2$sconfig%2$syaml%2$s%3$s',
             __DIR__,

@@ -91,7 +91,7 @@ class ObjectPrototypeTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $value
+     * @param array<int, array<string, mixed>> $value
      */
     #[DataProvider('invalidValueProvider')]
     public function testWithInvalidValue(array $value): void
@@ -104,6 +104,7 @@ class ObjectPrototypeTest extends TestCase
         );
 
         self::expectException(InvalidNodeTypeException::class);
+
         $objectPrototype->validatePrototype($value);
     }
 }

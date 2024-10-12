@@ -3,20 +3,21 @@
 namespace Kaizen\Components\Config\Schema\Prototype;
 
 use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Exception\InvalidSchemaException;
 use Kaizen\Components\Config\Schema\ConfigSchema;
-use Kaizen\Components\Config\Schema\Node\NodeInterface;
+use Kaizen\Components\Config\Schema\Node\Node;
 
 class ObjectPrototype extends AbstractPrototype
 {
     private ?ConfigSchema $prototypeSchema;
 
     /**
-     * @param null|NodeInterface[] $nodes
+     * @throws InvalidSchemaException
      */
     public function __construct(
-        ?NodeInterface ...$nodes,
+        Node ...$nodes,
     ) {
-        $this->prototypeSchema = $nodes ? new ConfigSchema(...$nodes) : null;
+        $this->prototypeSchema = !empty($nodes) ? new ConfigSchema(...$nodes) : null;
     }
 
     public function validatePrototype(array $array): void
@@ -31,9 +32,9 @@ class ObjectPrototype extends AbstractPrototype
     }
 
     /**
-     * @param array<string, mixed> $array
+     * @param array<int, array<string, mixed>> $array
      *
-     * @return array<string, mixed>
+     * @return array<int, array<string, mixed>>
      */
     #[\Override]
     public function processPrototype(array $array): array
@@ -54,8 +55,19 @@ class ObjectPrototype extends AbstractPrototype
     {
         $this->appendDefaultValueForMissingNodes($array);
 
+        if (null === $this->prototypeSchema) {
+            return $array;
+        }
+
         foreach ($array as $key => $value) {
             $node = $this->prototypeSchema->getNode($key);
+
+            if (!$node) {
+                throw new \RuntimeException(sprintf(
+                    'Node "%s" is not configured for your config',
+                    $key
+                ));
+            }
 
             $array[$key] = $node->processValue($value);
         }
@@ -64,6 +76,8 @@ class ObjectPrototype extends AbstractPrototype
     }
 
     /**
+     * @param array<string, mixed> $object
+     *
      * @throws InvalidNodeTypeException
      */
     private function validateObject(array $object): void
@@ -100,6 +114,10 @@ class ObjectPrototype extends AbstractPrototype
      */
     private function appendDefaultValueForMissingNodes(array &$config): void
     {
+        if (null === $this->prototypeSchema) {
+            return;
+        }
+
         foreach ($this->prototypeSchema->getNodes() as $node) {
             if (!array_key_exists($node->getKey(), $config) && null !== $defaultValue = $node->getDefaultValue()) {
                 $config[$node->getKey()] = $defaultValue;

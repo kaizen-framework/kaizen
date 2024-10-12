@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace Kaizen\Components\Config\Schema;
 
 use Kaizen\Components\Config\Exception\InvalidSchemaException;
+use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\NodeInterface;
 
 class ConfigSchema
 {
-    /** @var NodeInterface[] */
+    /** @var Node[] */
     private readonly array $schema;
 
     /**
      * @throws InvalidSchemaException
      */
     public function __construct(
-        NodeInterface ...$schema
+        Node ...$schema
     ) {
         $this->schema = $schema;
 
@@ -43,7 +44,7 @@ class ConfigSchema
     }
 
     /**
-     * @return NodeInterface[]
+     * @return Node[]
      */
     public function getNodes(): array
     {

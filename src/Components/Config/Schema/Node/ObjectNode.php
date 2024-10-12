@@ -51,6 +51,13 @@ class ObjectNode extends Node implements ParentNodeInterface
 
     public function getChildren(): ConfigSchema
     {
+        if (null === $this->children) {
+            throw new \RuntimeException(sprintf(
+                'Can not call "%s::getChildren()" no children',
+                self::class
+            ));
+        }
+
         return $this->children;
     }
 }

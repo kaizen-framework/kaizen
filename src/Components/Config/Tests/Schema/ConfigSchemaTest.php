@@ -37,7 +37,10 @@ class ConfigSchemaTest extends TestCase
             )),
         );
 
-        self::assertEquals('parameters', $schema->getNode('parameters')->getKey());
+        $node = $schema->getNode('parameters');
+
+        self::assertNotNull($node);
+        self::assertEquals('parameters', $node->getKey());
     }
 
     public function testExceptionOnDuplicatedKeys(): void

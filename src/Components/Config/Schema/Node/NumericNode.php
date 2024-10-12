@@ -61,6 +61,7 @@ class NumericNode extends Node
      */
     public function processValue(mixed $value): mixed
     {
+        /** @var float|int $value */
         $value = parent::processValue($value);
 
         if ($this->min > $value) {
