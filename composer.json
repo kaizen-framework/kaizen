@@ -22,22 +22,26 @@
     },
     "replace": {
         "kaizen-framework/config": "self.version",
+        "kaizen-framework/event-dispatcher": "self.version",
         "kaizen-framework/finder": "self.version"
     },
     "autoload": {
         "psr-4": {
             "Kaizen\\": "src",
             "Kaizen\\Components\\Config\\": "src/Components/Config/",
+            "Kaizen\\Components\\EventDispatcher\\": "src/Components/EventDispatcher/",
             "Kaizen\\Components\\Finder\\": "src/Components/Finder/"
         },
         "exclude-from-classmap": [
             "src/Components/Config/Tests/",
+            "src/Components/EventDispatcher/Tests/",
             "src/Components/Finder/Tests/"
         ]
     },
     "autoload-dev": {
         "psr-4": {
             "Kaizen\\Components\\Config\\Tests\\": "src/Components/Config/Tests/",
+            "Kaizen\\Components\\EventDispatcher\\Tests\\": "src/Components/EventDispatcher/Tests",
             "Kaizen\\Components\\Finder\\Tests\\": "src/Components/Finder/Tests/"
         }
     }

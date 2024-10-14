@@ -19,6 +19,9 @@ jobs:
           -
             local_path: 'Components/Finder'
             split_repository: 'finder'
+          -
+            local_path: 'Components/EventDispatcher'
+            split_repository: 'event-dispatcher'
 
     env:
       GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
