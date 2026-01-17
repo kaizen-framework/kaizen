@@ -6,3 +6,6 @@ services:
       dockerfile: docker/php/Dockerfile
     volumes:
       - .:/srv/app
+    ports:
+      - '8080:8080'
+      - '443:443'
