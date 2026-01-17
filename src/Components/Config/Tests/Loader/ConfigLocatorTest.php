@@ -44,7 +44,7 @@ class ConfigLocatorTest extends TestCase
         $configLocator = new ConfigLocator($basePath, [new YamlParser()]);
 
         $this->expectException(ParsingException::class);
-        $this->expectExceptionMessage('None of the parsers provided are able to support the "/srv/app/src/Components/Config/Tests/Fixtures/config/yaml/valid.xml" file');
+        $this->expectExceptionMessage('None of the parsers provided are able to support the "/app/src/Components/Config/Tests/Fixtures/config/yaml/valid.xml" file');
         $configLocator->locate('valid.xml');
     }
 

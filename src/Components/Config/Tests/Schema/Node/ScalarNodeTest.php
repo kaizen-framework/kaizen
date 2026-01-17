@@ -26,10 +26,10 @@ class ScalarNodeTest extends TestCase
     }
 
     #[DataProvider('validValueProvider')]
-    public function testValidateType(): void
+    public function testValidateType(mixed $value): void
     {
         $scalarNode = new ScalarNode('scalar');
-        $scalarNode->validateType(true);
+        $scalarNode->validateType($value);
 
         $this->assertSame('scalar', $scalarNode->getKey());
     }
