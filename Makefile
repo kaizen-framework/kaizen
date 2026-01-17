@@ -1,10 +1,10 @@
-RUN=docker exec php
+RUN=docker compose exec php
 
 cs: ## Run the php cs fixer analyse
 	$(RUN) vendor/bin/php-cs-fixer fix --config .php-cs-fixer.dist.php
 
 phpstan: ## Run phpstan static analysis
-	$(RUN) vendor/bin/phpstan analyse
+	$(RUN) vendor/bin/phpstan analyse src --memory-limit 1G
 
 rector: ## Run rector analysis (dry-run)
 	$(RUN) vendor/bin/rector process --dry-run --config=rector.php
