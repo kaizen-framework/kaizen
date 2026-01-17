@@ -13,4 +13,10 @@ ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/relea
 
 RUN install-php-extensions xdebug yaml
 
-WORKDIR /srv/app
+USER 1000:1000
+
+WORKDIR /app
+
+COPY --chmod=0555 docker/php/entrypoint.sh /entrypoint
+
+ENTRYPOINT ["/entrypoint"]
