@@ -1,7 +1,8 @@
 kaizen:
   config:
     databases:
-      - {database_url: 'mysql://user:password@localhost:3360/database', database_version: '12.3'}
+      - database_url: 'mysql://user:password@localhost:3360/database'
+        database_version: '12.3'
       - {database_url: 'mysql://user:password@localhost:3361/database2'}
     parameters:
       param1: value1

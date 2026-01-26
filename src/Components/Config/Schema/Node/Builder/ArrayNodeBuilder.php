@@ -4,29 +4,19 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\ArrayNode;
-use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 
-class ArrayNodeBuilder
+class ArrayNodeBuilder extends CompositeNodeBuilder
 {
-    private ?ConfigPrototypeInterface $configPrototype = null;
-
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $configSchemaBuilder
+        private readonly NodeListSchemaBuilder $configSchemaBuilder
     ) {}
 
-    public function withPrototype(ConfigPrototypeInterface $configPrototype): self
+    public function buildNode(): NodeListSchemaBuilder
     {
-        $this->configPrototype = $configPrototype;
-
-        return $this;
-    }
-
-    public function buildNode(): ConfigSchemaBuilder
-    {
-        $arrayNode = new ArrayNode($this->key, $this->configPrototype);
+        $arrayNode = new ArrayNode($this->key, $this->prototype);
 
         $this->configSchemaBuilder->add($arrayNode);
 

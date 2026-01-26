@@ -2,45 +2,34 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\Node\Node;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(BooleanNode::class)]
-class BooleanNodeTest extends TestCase
+class BooleanNodeTest extends AbstractNodeTester
 {
-    public function testValidateType(): void
+    public static function validValueProvider(): \Iterator
     {
-        $booleanNode = new BooleanNode('boolean');
-        $booleanNode->validateType(true);
-
-        $this->assertSame('boolean', $booleanNode->getKey());
+        yield [true];
+        yield [false];
+        yield [null];
     }
 
     public static function invalidValueProvider(): \Iterator
     {
-        yield [123];
-
-        yield ['test'];
-
-        yield [123.123];
-
-        yield [[]];
-
-        yield [new \stdClass()];
+        yield [123, 'node', 'Expected a boolean, but got int.'];
+        yield ['test', 'node', 'Expected a boolean, but got string.'];
+        yield [123.123, 'node', 'Expected a boolean, but got float.'];
+        yield [[], 'node', 'Expected a boolean, but got array.'];
+        yield [new \stdClass(), 'node', 'Expected a boolean, but got stdClass.'];
     }
 
-    #[DataProvider('invalidValueProvider')]
-    public function testException(mixed $value): void
+    protected function getNode(): Node
     {
-        $booleanNode = new BooleanNode('boolean');
-
-        $this->expectException(InvalidNodeTypeException::class);
-        $booleanNode->validateType($value);
+        return new BooleanNode('node');
     }
 }

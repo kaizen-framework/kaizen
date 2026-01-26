@@ -2,51 +2,35 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\ScalarNode;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(ScalarNode::class)]
-class ScalarNodeTest extends TestCase
+class ScalarNodeTest extends AbstractNodeTester
 {
     public static function validValueProvider(): \Iterator
     {
         yield ['string'];
-
         yield [123];
-
         yield [true];
-
         yield [123.123];
-    }
-
-    #[DataProvider('validValueProvider')]
-    public function testValidateType(mixed $value): void
-    {
-        $scalarNode = new ScalarNode('scalar');
-        $scalarNode->validateType($value);
-
-        $this->assertSame('scalar', $scalarNode->getKey());
+        yield [null];
     }
 
     public static function invalidValueProvider(): \Iterator
     {
-        yield [[]];
-
-        yield [new \stdClass()];
+        yield [[], 'scalar', 'Expected a scalar value, but got array.'];
+        yield [['key' => 'value'], 'scalar', 'Expected a scalar value, but got array.'];
+        yield [['arr'], 'scalar', 'Expected a scalar value, but got array.'];
+        yield [new \stdClass(), 'scalar', 'Expected a scalar value, but got stdClass.'];
     }
 
-    #[DataProvider('invalidValueProvider')]
-    public function testException(mixed $value): void
+    protected function getNode(): Node
     {
-        $scalarNode = new ScalarNode('scalar');
-
-        $this->expectException(InvalidNodeTypeException::class);
-        $scalarNode->validateType($value);
+        return new ScalarNode('scalar');
     }
 }

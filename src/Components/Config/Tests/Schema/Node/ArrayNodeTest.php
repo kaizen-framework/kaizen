@@ -2,61 +2,93 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
 use Kaizen\Components\Config\Schema\Node\ArrayNode;
-use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use Kaizen\Components\Config\Schema\Node\Node;
+use Kaizen\Components\Config\Schema\Prototype\AbstractPrototype;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(ArrayNode::class)]
-class ArrayNodeTest extends TestCase
+class ArrayNodeTest extends AbstractNodeTester
 {
-    public function testValidateType(): void
+    public static function validValueProvider(): \Iterator
     {
-        $arrayNode = new ArrayNode('array');
-
-        $arrayNode->validateType(['string', 123, true]);
-
-        $this->assertSame('array', $arrayNode->getKey());
+        yield [[true]];
+        yield [['string', 123, true]];
+        yield [[1, 2, 3]];
+        yield [[null, 1, 1.1, true, 'string']];
+        yield [null];
     }
 
-    public static function invalidValuesProvider(): \Iterator
+    public static function invalidValueProvider(): \Iterator
     {
-        yield [123];
-
-        yield [12.3];
-
-        yield ['string'];
-
-        yield [true];
+        yield [123, 'node', 'Expected an array, but got int.'];
+        yield [12.3, 'node' , 'Expected an array, but got float.'];
+        yield ['string', 'node', 'Expected an array, but got string.'];
+        yield [true, 'node', 'Expected an array, but got bool.'];
     }
 
-    #[DataProvider('invalidValuesProvider')]
-    public function testWithInvalidValue(mixed $value): void
+    public function testNormalize(): void
     {
-        $arrayNode = new ArrayNode('array');
+        $node = new ArrayNode('array');
 
-        $this->expectException(InvalidNodeTypeException::class);
-        $arrayNode->validateType($value);
+        $result = $node->normalize(['test']);
+
+        self::assertSame(['test'], $result);
     }
 
-    public function testPrototypeValidateIsCalled(): void
+    public function testNormalizeWithPrototype(): void
+    {
+        $prototype = $this->createMock(AbstractPrototype::class);
+        $prototype->expects(self::once())
+            ->method('normalize')
+            ->with(['test'])
+            ->willReturn(['test']);
+
+        $node = new ArrayNode('array', $prototype);
+
+        $node->normalize(['test']);
+    }
+
+    public function testPrototypeValidationFail(): void
     {
         $value = [
             'parameter' => 'value',
         ];
 
-        $prototypeMock = $this->createMock(ConfigPrototypeInterface::class);
+        $validationContext = new ValidationContext();
+
+        $prototypeValidationResult = new ValidationResult();
+        $prototypeValidationResult->addError('test', 'message');
+
+        $prototypeMock = $this->createMock(AbstractPrototype::class);
         $prototypeMock->expects(self::once())
-            ->method('validatePrototype')
-            ->with($value)
+            ->method('isValueSatisfiesPrototypeSpecification')
+            ->with($value, $validationContext->child('array'))
+            ->willReturn($prototypeValidationResult);
         ;
 
         $arrayNode = new ArrayNode('array', $prototypeMock);
-        $arrayNode->validateType($value);
+
+        $validationResult = $arrayNode->isValueSatisfiesNodeSpecification($value, $validationContext);
+
+        self::assertFalse($validationResult->isValid());
+        self::assertSame(
+            'test',
+            $validationResult->errors[0]->path
+        );
+        self::assertSame(
+            'message',
+            $validationResult->errors[0]->message
+        );
+    }
+
+    protected function getNode(): Node
+    {
+        return new ArrayNode('node');
     }
 }

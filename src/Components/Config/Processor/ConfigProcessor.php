@@ -6,88 +6,171 @@ namespace Kaizen\Components\Config\Processor;
 
 use Kaizen\Components\Config\ConfigInterface;
 use Kaizen\Components\Config\Exception\ConfigProcessingException;
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Exception\NodeNotFoundException;
-use Kaizen\Components\Config\Schema\ConfigSchema;
-use Kaizen\Components\Config\Schema\Node\NodeInterface;
-use Kaizen\Components\Config\Schema\Node\ParentNodeInterface;
+use Kaizen\Components\Config\Schema\NodeListSchema;
+use Kaizen\Components\Config\Schema\Node\Node;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
 
 class ConfigProcessor
 {
     /**
-     * @param array<string, mixed> $config
+     * Process the configuration against the provided node list schema.
+     *   - Replace the default value for the not provided nodes.
+     *   - Throw an exception if a misconfiguration is detected.
+     *   - Run the provided validations
      *
-     * @throws InvalidNodeTypeException
-     * @throws NodeNotFoundException
-     * @throws ConfigProcessingException
-     */
-    public function processConfig(array &$config, ConfigInterface $configInterface): void
-    {
-        $configSchema = $configInterface->getConfigSchema();
-
-        $config = $this->doProcess($config, $configSchema);
-    }
-
-    /**
      * @param array<string, mixed> $config
      *
      * @return array<string, mixed>
      *
-     * @throws InvalidNodeTypeException
-     * @throws NodeNotFoundException
      * @throws ConfigProcessingException
      */
-    private function doProcess(array $config, ConfigSchema $configSchema): array
+    public function processConfig(array $config, ConfigInterface $configInterface): array
     {
-        $this->assertRequiredNodeArePresent($configSchema, $config);
-        $this->appendDefaultValueForMissingNodes($config, $configSchema);
+        $nodeListSchema = $configInterface->getConfigSchema();
+        $this->checkForDuplicatedKeys($nodeListSchema);
+
+        $validationContext = new ValidationContext();
 
         foreach ($config as $key => $value) {
-            $node = $configSchema->getNode($key);
+            $node = $nodeListSchema->getNode($key);
 
-            if (!$node instanceof NodeInterface) {
-                throw new NodeNotFoundException($key);
+            if (!$node instanceof Node) {
+                $errorMessage = sprintf(
+                    'Invalid configuration key "%s", allowed keys are: ["%s"].',
+                    $key,
+                    implode('", "', $nodeListSchema->getNodeKeys())
+                );
+
+                if ($potentialKey = $nodeListSchema->getKeyFromLevenshtein($key, $config)) {
+                    $errorMessage .= sprintf(' Did you mean "%s" ?', $potentialKey);
+                }
+
+                throw new ConfigProcessingException($errorMessage);
             }
 
-            if ($node instanceof ParentNodeInterface) {
-                $config[$key] = $this->doProcess($value, $node->getChildren());
+            $nodeValidationResult = $node->isValueSatisfiesNodeSpecification($value, $validationContext);
 
+            if (!$nodeValidationResult->isValid()) {
+                throw new ConfigProcessingException(sprintf(
+                    'Invalid configuration at "%s": %s',
+                    $nodeValidationResult->errors[0]->path,
+                    $nodeValidationResult->errors[0]->message,
+                ));
+            }
+        }
+
+        foreach ($nodeListSchema->nodes as $node) {
+            $nodeValue = $node->normalize($config[$node->key] ?? null);
+
+            if (null === $nodeValue) {
                 continue;
             }
 
-            $config[$key] = $node->processValue($value);
-            $node->validateType($value);
+            $config[$node->key] = $nodeValue;
+
+            $constraintValidationResult = $node->validateConstraints($nodeValue, $nodeListSchema, $validationContext);
+
+            if (!$constraintValidationResult->isValid()) {
+                throw new ConfigProcessingException(sprintf(
+                    'Invalid configuration at "%s": %s',
+                    $constraintValidationResult->errors[0]->path,
+                    $constraintValidationResult->errors[0]->message,
+                ));
+            }
         }
+
+        $this->assertNoMissingRequiredKeys($config, $nodeListSchema, $validationContext);
 
         return $config;
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @param array<string, mixed> $values
+     *
+     * @throws ConfigProcessingException
      */
-    private function appendDefaultValueForMissingNodes(array &$config, ConfigSchema $configSchema): void
-    {
-        foreach ($configSchema->getNodes() as $node) {
-            if (!array_key_exists($node->getKey(), $config) && null !== $defaultValue = $node->getDefaultValue()) {
-                $config[$node->getKey()] = $defaultValue;
+    private function assertNoMissingRequiredKeys(
+        array $values,
+        NodeListSchema $nodeListSchema,
+        ValidationContext $validationContext
+    ): void {
+        foreach ($nodeListSchema->nodes as $node) {
+            if ((!array_key_exists($node->key, $values) || null === $values[$node->key]) && $node->isRequired) {
+                throw new ConfigProcessingException(sprintf(
+                    'Invalid configuration at "%s": The value is required but was not provided or is null.',
+                    $validationContext->getFullPathFromKey($node->key)
+                ));
             }
         }
     }
 
     /**
-     * @param array<string, mixed> $config
-     *
      * @throws ConfigProcessingException
      */
-    private function assertRequiredNodeArePresent(ConfigSchema $configSchema, array $config): void
+    private function checkForDuplicatedKeys(NodeListSchema $nodeListSchema): void
     {
-        foreach ($configSchema->getNodes() as $node) {
-            if ($node->isRequired() && !array_key_exists($node->getKey(), $config)) {
-                throw new ConfigProcessingException(sprintf(
-                    'Required config parameter "%s" is missing.',
-                    $node->getKey()
-                ));
-            }
+        $duplicatedKeys = $this->getDuplicatedKeys($nodeListSchema);
+        if ([] !== $duplicatedKeys) {
+            throw new ConfigProcessingException(sprintf(
+                'The provided configuration is invalid, the keys ["%s"] are duplicated.',
+                implode('", "', $duplicatedKeys)
+            ));
         }
+    }
+
+    /**
+     * @param string[] $duplicatedKeys
+     *
+     * @return string[]
+     */
+    private function getDuplicatedKeys(
+        NodeListSchema $nodeListSchema,
+        array $duplicatedKeys = [],
+        ?string $configPathPrefix = null
+    ): array {
+        $keys = $nodeListSchema->getNodeKeys();
+        $unique = array_unique($keys);
+
+        if (count($unique) !== count($keys)) {
+            $duplicatedKeys = [
+                ...$duplicatedKeys,
+                ...array_map(
+                    fn (string $key) => $this->buildConfigPathPrefix($configPathPrefix, $key),
+                    array_filter($keys, static function (string $key) use (&$unique) {
+                        $uniqueIndex = array_search($key, $unique);
+
+                        if (false === $uniqueIndex) {
+                            return true;
+                        }
+
+                        unset($unique[$uniqueIndex]);
+
+                        return false;
+                    })
+                )
+            ];
+        }
+
+        /** @var ObjectNode[] $objectNodes */
+        $objectNodes = array_filter($nodeListSchema->nodes, static fn (Node $node) => $node instanceof ObjectNode);
+
+        foreach ($objectNodes as $objectNode) {
+            $duplicatedKeys = $this->getDuplicatedKeys(
+                $objectNode->nodeListSchema,
+                $duplicatedKeys,
+                $this->buildConfigPathPrefix($configPathPrefix, $objectNode->key)
+            );
+        }
+
+        return $duplicatedKeys;
+    }
+
+    private function buildConfigPathPrefix(?string $pathPrefix, string $currentPath): string
+    {
+        if (null === $pathPrefix) {
+            return $currentPath;
+        }
+
+        return sprintf('%s.%s', $pathPrefix, $currentPath);
     }
 }

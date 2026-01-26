@@ -2,19 +2,33 @@
 
 namespace Kaizen\Components\Config\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
 
-class IntegerNode extends NumericNode
+/**
+ * @extends Node<int>
+ */
+class IntegerNode extends Node
 {
     #[\Override]
-    public function validateType(mixed $value): void
+    public function isValueSatisfiesNodeSpecification(
+        mixed $value,
+        ValidationContext $validationContext,
+    ): ValidationResult
     {
-        if (!is_int($value)) {
-            throw new InvalidNodeTypeException(sprintf(
-                'The node "%s" must be of type "integer", "%s" given',
-                $this->getKey(),
-                get_debug_type($value)
-            ));
+        $validationResult = parent::isValueSatisfiesNodeSpecification($value, $validationContext);
+
+        if (!$validationResult->isValid() || null === $value) {
+            return $validationResult;
         }
+
+        if (!is_int($value)) {
+            $validationResult->addError(
+                $validationContext->getFullPathFromKey($this->key),
+                sprintf('Expected an int, but got %s.', get_debug_type($value))
+            );
+        }
+
+        return $validationResult;
     }
 }

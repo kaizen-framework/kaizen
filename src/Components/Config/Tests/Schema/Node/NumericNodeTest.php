@@ -2,76 +2,34 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\ConfigProcessingException;
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\NumericNode;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(NumericNode::class)]
-class NumericNodeTest extends TestCase
+class NumericNodeTest extends AbstractNodeTester
 {
-    public function testValidateType(): void
+    public static function validValueProvider(): \Iterator
     {
-        $numericNode = new NumericNode('numeric');
-
-        $numericNode->validateType(12.3);
-        $numericNode->validateType(12);
-
-        $this->assertSame('numeric', $numericNode->getKey());
-    }
-
-    public static function invalidNumericValueProvider(): \Iterator
-    {
-        yield 'With int value under the min' => [
-            2, 10, 1,
-        ];
-
-        yield 'With float value under the min' => [
-            2.5, 10.5, 1.5,
-        ];
-
-        yield 'With int value over the min' => [
-            10, 105, 150,
-        ];
-
-        yield 'With float value over the min' => [
-            2.5, 10.5, 19.5,
-        ];
-    }
-
-    #[DataProvider('invalidNumericValueProvider')]
-    public function testProcessValue(float|int $min, float|int $max, float|int $actualValue): void
-    {
-        $numericNode = new NumericNode('numeric');
-        $numericNode->min($min)->max($max);
-
-        self::expectException(ConfigProcessingException::class);
-
-        $numericNode->processValue($actualValue);
+        yield [10];
+        yield [1e5];
+        yield [10.5];
+        yield [null];
     }
 
     public static function invalidValueProvider(): \Iterator
     {
-        yield [true];
-
-        yield ['test'];
-
-        yield [[]];
-
-        yield [new \stdClass()];
+        yield [true, 'numeric', 'Expected a numeric value, but got bool.'];
+        yield ['test', 'numeric', 'Expected a numeric value, but got string.'];
+        yield [[], 'numeric', 'Expected a numeric value, but got array.'];
+        yield [new \stdClass(), 'numeric', 'Expected a numeric value, but got stdClass.'];
     }
 
-    #[DataProvider('invalidValueProvider')]
-    public function testException(mixed $value): void
+    protected function getNode(): Node
     {
-        $numericNode = new NumericNode('numeric');
-
-        $this->expectException(InvalidNodeTypeException::class);
-        $numericNode->validateType($value);
+        return new NumericNode('numeric');
     }
 }

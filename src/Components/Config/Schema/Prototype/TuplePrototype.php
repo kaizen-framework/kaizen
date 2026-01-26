@@ -2,7 +2,8 @@
 
 namespace Kaizen\Components\Config\Schema\Prototype;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
 
 class TuplePrototype extends AbstractPrototype
 {
@@ -15,27 +16,40 @@ class TuplePrototype extends AbstractPrototype
         $this->types = $tupleTypesEnum;
     }
 
-    /**
-     * @param array<int, mixed> $array
-     *
-     * @throws InvalidNodeTypeException
-     */
     #[\Override]
-    public function validatePrototype(array $array): void
-    {
-        if (count($array) !== count($this->types)) {
-            throw new InvalidNodeTypeException();
-        }
+    public function isValueSatisfiesPrototypeSpecification(
+        array $values,
+        ValidationContext $validationContext,
+    ): ValidationResult {
+        $validationResult = parent::isValueSatisfiesPrototypeSpecification($values, $validationContext);
 
-        foreach ($array as $key => $value) {
+        $expectedTypes = array_map(static fn (TupleTypesEnum $tupleType) => $tupleType->value, $this->types);
+
+        $lastProcessedKey = 0;
+
+        foreach ($values as $key => $value) {
             $expectedType = $this->types[$key];
 
             if (
                 (TupleTypesEnum::SCALAR === $expectedType && !is_scalar($value))
-                || (TupleTypesEnum::SCALAR !== $expectedType && gettype($value) !== $expectedType->value)
+                || (TupleTypesEnum::SCALAR !== $expectedType && get_debug_type($value) !== $expectedType->value)
             ) {
-                throw new InvalidNodeTypeException();
+                $validationResult->addError(
+                    $validationContext->getFullPathFromKey($key),
+                    sprintf('Expected a tuple array of [%s].', implode(', ', $expectedTypes))
+                );
             }
+
+            $lastProcessedKey = $key;
         }
+
+        if ($lastProcessedKey !== count($this->types) - 1) {
+            $validationResult->addError(
+                $validationContext->getFullPathFromKey($lastProcessedKey),
+                sprintf('Expected a tuple array of [%s].', implode(', ', $expectedTypes))
+            );
+        }
+
+        return $validationResult;
     }
 }

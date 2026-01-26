@@ -4,32 +4,22 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
-use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
 
-class ObjectVariableNodeBuilder
+class ObjectVariableNodeBuilder extends CompositeNodeBuilder
 {
-    private ?ConfigPrototypeInterface $configPrototype = null;
-
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $configSchemaBuilder
+        private readonly NodeListSchemaBuilder $nodeListSchemaBuilder
     ) {}
 
-    public function withPrototype(ConfigPrototypeInterface $configPrototype): self
+    public function buildNode(): NodeListSchemaBuilder
     {
-        $this->configPrototype = $configPrototype;
+        $objectVariableNode = new ObjectVariableNode($this->key, $this->prototype);
 
-        return $this;
-    }
+        $this->nodeListSchemaBuilder->add($objectVariableNode);
 
-    public function buildNode(): ConfigSchemaBuilder
-    {
-        $objectVariableNode = new ObjectVariableNode($this->key, $this->configPrototype);
-
-        $this->configSchemaBuilder->add($objectVariableNode);
-
-        return $this->configSchemaBuilder;
+        return $this->nodeListSchemaBuilder;
     }
 }

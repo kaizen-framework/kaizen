@@ -18,10 +18,10 @@ class ConfigLocatorTest extends TestCase
 {
     public function testLocateYamlResource(): void
     {
-        $basePath = sprintf('%1$s%2$s..%2$sFixtures%2$sconfig%2$syaml', __DIR__, DIRECTORY_SEPARATOR);
+        $basePath = sprintf('%1$s%2$s..%2$sFixtures%2$sconfig', __DIR__, DIRECTORY_SEPARATOR);
         $configLocator = new ConfigLocator($basePath, [new YamlParser()]);
 
-        $config = $configLocator->locate('valid.yaml');
+        $config = $configLocator->locate('yaml/valid.yaml');
 
         $expectedConfig = [
             'test_array' => [
@@ -64,6 +64,16 @@ class ConfigLocatorTest extends TestCase
         $configLocator = new ConfigLocator($basePath, [new YamlParser()]);
 
         $this->expectException(InvalidFormatException::class);
+
+        $configLocator->locate('invalid.yaml');
+    }
+
+    public function testExceptionWhenMultipleParserCanHandleFile(): void
+    {
+        $basePath = sprintf('%1$s%2$s..%2$sFixtures%2$sconfig%2$syaml', __DIR__, DIRECTORY_SEPARATOR);
+        $configLocator = new ConfigLocator($basePath, [new YamlParser(), new YamlParser()]);
+
+        $this->expectException(ParsingException::class);
 
         $configLocator->locate('invalid.yaml');
     }

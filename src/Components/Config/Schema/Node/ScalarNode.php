@@ -4,29 +4,32 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
 
+/**
+ * @extends Node<scalar>
+ */
 class ScalarNode extends Node
 {
-    public function __construct(
-        private readonly string $key,
-    ) {}
-
     #[\Override]
-    public function validateType(mixed $value): void
-    {
-        if (!is_scalar($value)) {
-            throw new InvalidNodeTypeException(sprintf(
-                'The node "%s" must be of type "scalar", "%s" given',
-                $this->getKey(),
-                get_debug_type($value)
-            ));
+    public function isValueSatisfiesNodeSpecification(
+        mixed $value,
+        ValidationContext $validationContext,
+    ): ValidationResult {
+        $validationResult = parent::isValueSatisfiesNodeSpecification($value, $validationContext);
+
+        if (!$validationResult->isValid() || null === $value) {
+            return $validationResult;
         }
-    }
 
-    #[\Override]
-    public function getKey(): string
-    {
-        return $this->key;
+        if (!is_scalar($value)) {
+            $validationResult->addError(
+                $validationContext->getFullPathFromKey($this->key),
+                sprintf('Expected a scalar value, but got %s.', get_debug_type($value))
+            );
+        }
+
+        return $validationResult;
     }
 }

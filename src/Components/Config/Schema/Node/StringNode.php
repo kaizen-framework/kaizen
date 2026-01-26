@@ -2,29 +2,32 @@
 
 namespace Kaizen\Components\Config\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
 
+/**
+ * @extends Node<string>
+ */
 class StringNode extends Node
 {
-    public function __construct(
-        private readonly string $key,
-    ) {}
-
     #[\Override]
-    public function validateType(mixed $value): void
-    {
-        if (!is_string($value)) {
-            throw new InvalidNodeTypeException(sprintf(
-                'The node "%s" must be of type "string", "%s" given',
-                $this->getKey(),
-                get_debug_type($value)
-            ));
+    public function isValueSatisfiesNodeSpecification(
+        mixed $value,
+        ValidationContext $validationContext,
+    ): ValidationResult {
+        $validationResult = parent::isValueSatisfiesNodeSpecification($value, $validationContext);
+
+        if (!$validationResult->isValid() || null === $value) {
+            return $validationResult;
         }
-    }
 
-    #[\Override]
-    public function getKey(): string
-    {
-        return $this->key;
+        if (!is_string($value)){
+            $validationResult->addError(
+                $validationContext->getFullPathFromKey($this->key),
+                sprintf('Expected a string, but got %s.', get_debug_type($value))
+            );
+        }
+
+        return $validationResult;
     }
 }

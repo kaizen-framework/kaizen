@@ -8,10 +8,8 @@ use Kaizen\Components\Config\ConfigInterface;
 use Kaizen\Components\Config\Loader\ConfigLocator;
 use Kaizen\Components\Config\Parser\YamlParser;
 use Kaizen\Components\Config\Processor\ConfigProcessor;
-use Kaizen\Components\Config\Schema\ConfigSchema;
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
-use Kaizen\Components\Config\Schema\Node\StringNode;
-use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
+use Kaizen\Components\Config\Schema\NodeListSchema;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
@@ -36,7 +34,7 @@ class ConfigFullWorkflowTest extends TestCase
 
         $configProcessor = new ConfigProcessor();
 
-        $configProcessor->processConfig($config, $schema);
+        $config = $configProcessor->processConfig($config, $schema);
 
         $expectedConfig = [
             'kaizen' => [
@@ -66,25 +64,23 @@ class ConfigFullWorkflowTest extends TestCase
     private function getConfigInterface(): ConfigInterface
     {
         return new class implements ConfigInterface {
-            public function getConfigSchema(): ConfigSchema
+            public function getConfigSchema(): NodeListSchema
             {
-                $configSchemaBuilder = new ConfigSchemaBuilder();
+                $configSchemaBuilder = new NodeListSchemaBuilder();
 
                 return $configSchemaBuilder
                     ->child('kaizen')
                     ->child('config')
                     ->array('databases')
-                    ->withPrototype(new ObjectPrototype(
-                        (new StringNode('database_url'))->required(),
-                        (new StringNode('database_version'))->defaultValue('1.0.0')
-                    ))
-                    ->buildNode()
-                    ->objectVariable('parameters')
-                    ->buildNode()
+                    ->withPrototype()->object(static fn (NodeListSchemaBuilder $builder) => $builder
+                        ->string('database_url')->pattern('/^[a-zA-Z_-]+:\/\/.*?:.*?@[a-zA-Z_-]+:[0-9]{2,5}\/\w+/')->required()->buildNode()
+                        ->string('database_version')->defaultValue('1.0.0')->buildNode()
+                        ->build()
+                    )->buildNode()
+                    ->objectVariable('parameters')->buildNode()
                     ->buildChildNode()
                     ->buildChildNode()
-                    ->string('okok')
-                    ->buildNode()
+                    ->string('okok')->buildNode()
                     ->build()
                 ;
             }

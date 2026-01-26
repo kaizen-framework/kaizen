@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\ScalarNode;
 
-class ScalarNodeBuilder
+/**
+ * @extends NodeBuilder<scalar>
+ */
+class ScalarNodeBuilder extends NodeBuilder
 {
     protected bool $isRequired = false;
 
@@ -15,7 +18,7 @@ class ScalarNodeBuilder
 
     public function __construct(
         protected readonly string $key,
-        protected readonly ConfigSchemaBuilder $configSchemaBuilder
+        protected readonly NodeListSchemaBuilder $configSchemaBuilder
     ) {}
 
     public function required(): self
@@ -32,7 +35,7 @@ class ScalarNodeBuilder
         return $this;
     }
 
-    public function buildNode(): ConfigSchemaBuilder
+    public function buildNode(): NodeListSchemaBuilder
     {
         $scalarNode = new ScalarNode($this->key);
 

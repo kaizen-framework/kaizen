@@ -2,55 +2,36 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\ConfigProcessingException;
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Node\Node;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(IntegerNode::class)]
-class IntegerNodeTest extends TestCase
+class IntegerNodeTest extends AbstractNodeTester
 {
-    public function testValidateType(): void
+    public static function validValueProvider(): \Iterator
     {
-        $integerNode = new IntegerNode('integer');
-        $integerNode->validateType(123);
-
-        $this->assertSame('integer', $integerNode->getKey());
-    }
-
-    public function testProcessValue(): void
-    {
-        $integerNode = new IntegerNode('int');
-        $integerNode->min(10);
-
-        self::expectException(ConfigProcessingException::class);
-        $integerNode->processValue(1);
+        yield [1];
+        yield [10];
+        yield [155];
+        yield [null];
     }
 
     public static function invalidValueProvider(): \Iterator
     {
-        yield [true];
-
-        yield ['test'];
-
-        yield [123.123];
-
-        yield [[]];
-
-        yield [new \stdClass()];
+        yield [true, 'integer', 'Expected an int, but got bool.'];
+        yield ['test', 'integer', 'Expected an int, but got string.'];
+        yield [123.123, 'integer', 'Expected an int, but got float.'];
+        yield [1e7, 'integer', 'Expected an int, but got float.'];
+        yield [[], 'integer', 'Expected an int, but got array.'];
+        yield [new \stdClass(), 'integer', 'Expected an int, but got stdClass.'];
     }
 
-    #[DataProvider('invalidValueProvider')]
-    public function testException(mixed $value): void
+    protected function getNode(): Node
     {
-        $integerNode = new IntegerNode('integer');
-
-        $this->expectException(InvalidNodeTypeException::class);
-        $integerNode->validateType($value);
+        return new IntegerNode('integer');
     }
 }

@@ -2,48 +2,35 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(StringNode::class)]
-class StringNodeTest extends TestCase
+class StringNodeTest extends AbstractNodeTester
 {
-    public function testValidateType(): void
+    public static function validValueProvider(): \Iterator
     {
-        $stringNode = new StringNode('string');
-        $stringNode->validateType('okok');
-
-        $this->assertSame('string', $stringNode->getKey());
+        yield [null];
+        yield ['foo'];
+        yield ['bar'];
+        yield ['baz'];
     }
 
     public static function invalidValueProvider(): \Iterator
     {
-        yield [true];
-
-        yield [123];
-
-        yield [123.22];
-
-        yield [[]];
-
-        yield [new \stdClass()];
+        yield [true, 'string', 'Expected a string, but got bool.'];
+        yield [123, 'string', 'Expected a string, but got int.'];
+        yield [123.22, 'string', 'Expected a string, but got float.'];
+        yield [[], 'string', 'Expected a string, but got array.'];
+        yield [new \stdClass(), 'string', 'Expected a string, but got stdClass.'];
     }
 
-    /**
-     * @param array<int, mixed>|bool|float|int|object $value
-     */
-    #[DataProvider('invalidValueProvider')]
-    public function testException(mixed $value): void
+    protected function getNode(): Node
     {
-        $stringNode = new StringNode('string');
-
-        $this->expectException(InvalidNodeTypeException::class);
-        $stringNode->validateType($value);
+        return new StringNode('string');
     }
 }

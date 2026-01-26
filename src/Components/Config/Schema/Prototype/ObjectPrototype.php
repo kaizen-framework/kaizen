@@ -2,127 +2,97 @@
 
 namespace Kaizen\Components\Config\Schema\Prototype;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Exception\InvalidSchemaException;
-use Kaizen\Components\Config\Schema\ConfigSchema;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
+use Kaizen\Components\Config\Schema\Node\ObjectNode;
+use Kaizen\Components\Config\Schema\NodeListSchema;
 use Kaizen\Components\Config\Schema\Node\Node;
 
 class ObjectPrototype extends AbstractPrototype
 {
-    private readonly ?ConfigSchema $configSchema;
+    private readonly ?NodeListSchema $nodeListSchema;
 
     /**
-     * @throws InvalidSchemaException
+     * @param Node<mixed> ...$node
      */
     public function __construct(
         Node ...$node,
     ) {
-        $this->configSchema = [] === $node ? null : new ConfigSchema(...$node);
+        $this->nodeListSchema = [] === $node ? null : new NodeListSchema(...$node);
     }
 
     #[\Override]
-    public function validatePrototype(array $array): void
-    {
-        foreach ($array as $item) {
-            if (!is_array($item)) {
-                throw new InvalidNodeTypeException();
+    public function isValueSatisfiesPrototypeSpecification(
+        array $values,
+        ValidationContext $validationContext,
+    ): ValidationResult {
+        $validationResult = parent::isValueSatisfiesPrototypeSpecification($values, $validationContext);
+
+        foreach ($values as $key => $value) {
+            if (!is_array($value)) {
+                $validationResult->addError(
+                    $validationContext->getFullPathFromKey($key),
+                    sprintf('Expected an object, got %s.', get_debug_type($value))
+                );
+
+                return $validationResult;
             }
 
-            $this->validateObject($item);
-        }
-    }
+            if (array_any(array_keys($value), static fn (string|int $subKey) => !is_string($subKey))) {
+                $validationResult->addError(
+                    $validationContext->getFullPathFromKey($key),
+                    'All children should have a key.'
+                );
 
-    /**
-     * @param array<int, array<string, mixed>> $array
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    #[\Override]
-    public function processPrototype(array $array): array
-    {
-        foreach ($array as $key => $value) {
-            $array[$key] = $this->processPrototypeValue($value);
-        }
-
-        return $array;
-    }
-
-    /**
-     * @param array<string, mixed> $array
-     *
-     * @return array<string, mixed>
-     */
-    private function processPrototypeValue(array $array): array
-    {
-        $this->appendDefaultValueForMissingNodes($array);
-
-        if (null === $this->configSchema) {
-            return $array;
-        }
-
-        foreach ($array as $key => $value) {
-            $node = $this->configSchema->getNode($key);
-
-            if (null === $node) {
-                throw new \RuntimeException(sprintf(
-                    'Node "%s" is not configured for your config',
-                    $key
-                ));
+                return $validationResult;
             }
 
-            $array[$key] = $node->processValue($value);
-        }
-
-        return $array;
-    }
-
-    /**
-     * @param array<string, mixed> $object
-     *
-     * @throws InvalidNodeTypeException
-     */
-    private function validateObject(array $object): void
-    {
-        if ([] === $object) {
-            throw new InvalidNodeTypeException('Empty object are not allowed');
-        }
-
-        foreach ($object as $key => $value) {
-            if (!is_string($key)) {
-                throw new InvalidNodeTypeException('must be of type object');
-            }
-
-            if (null === $this->configSchema) {
+            if (null === $this->nodeListSchema) {
                 continue;
             }
 
-            $node = $this->configSchema->getNode($key);
+            $objectNode = new ObjectNode($validationContext->getFullPathFromKey($key), $this->nodeListSchema);
 
-            if (null === $node) {
-                throw new InvalidNodeTypeException(sprintf(
-                    'key %s not allowed by the prototype, expected keys "%s"',
-                    $key,
-                    implode('", "', $this->configSchema->getNodeKeys())
-                ));
-            }
-
-            $node->validateType($value);
+            $validationResult->merge($objectNode->isValueSatisfiesNodeSpecification(
+                $value,
+                new ValidationContext()
+            ));
         }
+
+        return $validationResult;
     }
 
     /**
-     * @param array<string, mixed> $config
+     * @template T of array<string, mixed>|array<int, mixed>
+     *
+     * @param T $array
+     *
+     * @return T
      */
-    private function appendDefaultValueForMissingNodes(array &$config): void
+    #[\Override]
+    public function normalize(array $array): array
     {
-        if (null === $this->configSchema) {
-            return;
+        $array = parent::normalize($array);
+
+        if (null === $this->nodeListSchema) {
+            return $array;
         }
 
-        foreach ($this->configSchema->getNodes() as $node) {
-            if (!array_key_exists($node->getKey(), $config) && null !== $defaultValue = $node->getDefaultValue()) {
-                $config[$node->getKey()] = $defaultValue;
+        /** @var array<string, mixed> $value */
+        foreach ($array as $key => $value) {
+            $objectNode = new ObjectNode('', $this->nodeListSchema);
+
+            $nodeValue = $objectNode->normalize($value);
+
+            if (null === $nodeValue) {
+                unset($array[$key]);
+                continue;
             }
+
+            $array[$key] = $nodeValue;
         }
+
+        /** @var T $array needed because phpstan think the type has changed even if it not the case */
+        return $array;
     }
 }

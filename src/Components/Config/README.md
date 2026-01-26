@@ -12,9 +12,9 @@ You can use the `ConfigSchemaBuilder` to construct your schema with methods that
 ```php
 class Configuration implements \Kaizen\Components\Config\ConfigInterface
 {
-    public function getConfigSchema(): \Kaizen\Components\Config\Schema\ConfigSchema
+    public function getConfigSchema(): \Kaizen\Components\Config\Schema\NodeListSchema
     {
-        $schemaBuilder = new \Kaizen\Components\Config\Schema\ConfigSchemaBuilder();
+        $schemaBuilder = new \Kaizen\Components\Config\Schema\NodeListSchemaBuilder();
 
         $schema = $schemaBuilder
             ->boolean('booleanNode')
@@ -27,7 +27,7 @@ class Configuration implements \Kaizen\Components\Config\ConfigInterface
                 ->defaultValue(3)
                 ->buildNode()
             ->array('arrayNode')
-                ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\IntegerPrototype())
+                ->withPrototype()->integer() # Or ->setPrototype(new \Kaizen\Components\Config\Schema\Prototype\IntegerPrototype()) This syntax allow to create your custom prototypes
                 ->buildNode()
             ->array('arrayObjectNode')
                 ->withPrototype(new \Kaizen\Components\Config\Schema\Prototype\ObjectPrototype(

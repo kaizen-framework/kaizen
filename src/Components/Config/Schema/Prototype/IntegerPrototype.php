@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Prototype;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
 
 class IntegerPrototype extends AbstractPrototype
 {
-    /**
-     * @param array<int, mixed> $array
-     *
-     * @throws InvalidNodeTypeException
-     */
     #[\Override]
-    public function validatePrototype(array $array): void
-    {
-        foreach ($array as $item) {
-            if (!is_int($item)) {
-                throw new InvalidNodeTypeException(sprintf(
-                    'Type %s not allowed, expected : int',
-                    gettype($item)
-                ));
+    public function isValueSatisfiesPrototypeSpecification(
+        array $values,
+        ValidationContext $validationContext
+    ): ValidationResult {
+        $validationResult = parent::isValueSatisfiesPrototypeSpecification($values, $validationContext);
+
+        foreach ($values as $key => $value) {
+            if (!is_int($value)) {
+                $validationResult->addError(
+                    $validationContext->getFullPathFromKey($key),
+                    'Expected an array of integers.'
+                );
             }
         }
+
+        return $validationResult;
     }
 }

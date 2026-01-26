@@ -19,7 +19,7 @@
             "Kaizen\\Components\\Config\\": ""
         },
         "exclude-from-classmap": [
-            "Tests/"
+            "/Tests/"
         ]
     },
     "autoload-dev": {

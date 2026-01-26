@@ -85,6 +85,19 @@ class YamlParserTest extends TestCase
         $yamlParser->parse($fileContent);
     }
 
+    public function testParseValidYamlAndInvalidConst(): void
+    {
+        $yamlParser = new YamlParser();
+
+        $fileContent = <<<'YAML'
+        test_const_interface: !php/const Kaizen\Components\Config\Tests\Fixtures\Constant\TestConstInterface::NOT_EXISTS
+        YAML;
+
+        $this->expectException(ParsingException::class);
+
+        $yamlParser->parse($fileContent);
+    }
+
     public static function fileProvider(): \Iterator
     {
         yield 'yaml' => ['valid.yaml', true];
@@ -95,13 +108,16 @@ class YamlParserTest extends TestCase
     #[DataProvider('fileProvider')]
     public function testSupportsFile(string $file, bool $expectedResult): void
     {
-        /** @var string $path */
         $path = realpath(sprintf(
             '%1$s%2$s..%2$sFixtures%2$sconfig%2$syaml%2$s%3$s',
             __DIR__,
             DIRECTORY_SEPARATOR,
             $file
         ));
+
+        if (false === $path) {
+            self::fail('Unable to locate file path.');
+        }
 
         $yamlParser = new YamlParser();
 

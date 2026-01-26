@@ -2,73 +2,35 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\AbstractPrototype;
 use Kaizen\Components\Config\Schema\Prototype\StringPrototype;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(StringPrototype::class)]
-class StringPrototypeTest extends TestCase
+class StringPrototypeTest extends AbstractPrototypeTester
 {
-    public function testValidateArray(): void
+    public static function validValueProvider(): \Iterator
     {
-        self::expectNotToPerformAssertions();
-
-        $stringPrototype = new StringPrototype();
-
-        $stringPrototype->validatePrototype(['test', 'test2', 'test3']);
+        yield [['string']];
+        yield [['string1', 'string2']];
     }
 
-    public function testValidateWithArrayNode(): void
+    public static function invalidValueProvider(): \Iterator
     {
-        self::expectNotToPerformAssertions();
-
-        $arrayNode = new ArrayNode('string', new StringPrototype());
-
-        $arrayNode->validateType(['test', 'test2', 'test3']);
+        yield [[new \stdClass()], 'test[0]', 'Expected an array of string.'];
+        yield [[[1,2,3]], 'test[0]', 'Expected an array of string.'];
+        yield [[['key' => 'value']], 'test[0]', 'Expected an array of string.'];
+        yield [[null], 'test[0]', 'Expected an array of string.'];
+        yield [[[]], 'test[0]', 'Expected an array of string.'];
+        yield [['string', 12], 'test[1]', 'Expected an array of string.'];
+        yield [[false, 'string'], 'test[0]', 'Expected an array of string.'];
     }
 
-    public static function invalidValuesProvider(): \Iterator
+    protected function getPrototype(): AbstractPrototype
     {
-        yield [[123]];
-
-        yield [['test', 123]];
-
-        yield [['test', 123.123, false]];
-
-        yield [[123, 'test', true]];
-
-        yield [[true, 'test', true]];
-
-        yield [['test', 123, true, 'other']];
-    }
-
-    /**
-     * @param array<int, mixed> $value
-     */
-    #[DataProvider('invalidValuesProvider')]
-    public function testWithInvalidArray(array $value): void
-    {
-        $stringPrototype = new StringPrototype();
-
-        self::expectException(InvalidNodeTypeException::class);
-        $stringPrototype->validatePrototype($value);
-    }
-
-    /**
-     * @param array<int, mixed> $value
-     */
-    #[DataProvider('invalidValuesProvider')]
-    public function testInvalidWithArrayNode(array $value): void
-    {
-        $arrayNode = new ArrayNode('array_node', new StringPrototype());
-
-        self::expectException(InvalidNodeTypeException::class);
-        $arrayNode->validateType($value);
+        return new StringPrototype();
     }
 }

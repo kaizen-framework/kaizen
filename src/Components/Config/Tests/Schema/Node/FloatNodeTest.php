@@ -2,55 +2,35 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\ConfigProcessingException;
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
 use Kaizen\Components\Config\Schema\Node\FloatNode;
+use Kaizen\Components\Config\Schema\Node\Node;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(FloatNode::class)]
-class FloatNodeTest extends TestCase
+class FloatNodeTest extends AbstractNodeTester
 {
-    public function testValidateType(): void
+    public static function validValueProvider(): \Iterator
     {
-        $floatNode = new FloatNode('float');
-        $floatNode->validateType(12.3);
-
-        $this->assertSame('float', $floatNode->getKey());
-    }
-
-    public function testProcessValue(): void
-    {
-        $floatNode = new FloatNode('float');
-        $floatNode->min(10.5);
-
-        self::expectException(ConfigProcessingException::class);
-        $floatNode->processValue(1.3);
+        yield [1.1];
+        yield [12.5];
+        yield [1e5];
+        yield [null];
     }
 
     public static function invalidValueProvider(): \Iterator
     {
-        yield [true];
-
-        yield ['test'];
-
-        yield [123];
-
-        yield [[]];
-
-        yield [new \stdClass()];
+        yield [true, 'float', 'Expected a float, but got bool.'];
+        yield ['test', 'float', 'Expected a float, but got string.'];
+        yield [123, 'float', 'Expected a float, but got int.'];
+        yield [[], 'float', 'Expected a float, but got array.'];
+        yield [new \stdClass(), 'float', 'Expected a float, but got stdClass.'];
     }
 
-    #[DataProvider('invalidValueProvider')]
-    public function testException(mixed $value): void
+    protected function getNode(): Node
     {
-        $floatNode = new FloatNode('float');
-
-        $this->expectException(InvalidNodeTypeException::class);
-        $floatNode->validateType($value);
+        return new FloatNode('float');
     }
 }

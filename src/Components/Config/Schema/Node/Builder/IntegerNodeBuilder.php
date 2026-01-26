@@ -4,34 +4,41 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\IntegerNode;
+use Kaizen\Components\Config\Schema\Validation\Numeric\MaxConstraintValidator;
+use Kaizen\Components\Config\Schema\Validation\Numeric\MinConstraintValidator;
 
-class IntegerNodeBuilder
+/**
+ * @extends NodeBuilder<int>
+ */
+class IntegerNodeBuilder extends NodeBuilder
 {
-    private ?int $min = null;
-
-    private ?int $max = null;
-
     private ?int $defaultValue = null;
 
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $configSchemaBuilder
+        private readonly NodeListSchemaBuilder $configSchemaBuilder
     ) {}
 
-    public function min(int $min): self
+    public function min(int $value): self
     {
-        $this->min = $min;
+        /** @var MinConstraintValidator<int> $minConstraint */
+        $minConstraint = new MinConstraintValidator($value);
+
+        $this->constraints[] = $minConstraint;
 
         return $this;
     }
 
-    public function max(int $max): self
+    public function max(int $value): self
     {
-        $this->max = $max;
+        /** @var MaxConstraintValidator<int> $maxConstraint */
+        $maxConstraint = new MaxConstraintValidator($value);
+
+        $this->constraints[] = $maxConstraint;
 
         return $this;
     }
@@ -50,17 +57,10 @@ class IntegerNodeBuilder
         return $this;
     }
 
-    public function buildNode(): ConfigSchemaBuilder
+    public function buildNode(): NodeListSchemaBuilder
     {
         $integerNode = new IntegerNode($this->key);
-
-        if (null !== $this->min) {
-            $integerNode->min($this->min);
-        }
-
-        if (null !== $this->max) {
-            $integerNode->max($this->max);
-        }
+        $integerNode->setConstraintValidators($this->constraints);
 
         if (null !== $this->defaultValue) {
             $integerNode->defaultValue($this->defaultValue);

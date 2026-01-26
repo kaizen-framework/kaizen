@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema;
 
-use Kaizen\Components\Config\Exception\InvalidSchemaException;
 use Kaizen\Components\Config\Schema\Node\Builder\ArrayNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\BooleanNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Builder\FloatNodeBuilder;
@@ -15,9 +14,9 @@ use Kaizen\Components\Config\Schema\Node\Builder\StringNodeBuilder;
 use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\ObjectNode;
 
-class ConfigSchemaBuilder
+class NodeListSchemaBuilder
 {
-    /** @var Node[] */
+    /** @var list<Node<mixed>> */
     private array $nodes = [];
 
     public function __construct(
@@ -65,6 +64,9 @@ class ConfigSchemaBuilder
         return new self($this, $key);
     }
 
+    /**
+     * @param Node<mixed> $node
+     */
     public function add(Node $node): void
     {
         $this->nodes[] = $node;
@@ -72,8 +74,6 @@ class ConfigSchemaBuilder
 
     public function buildChildNode(): self
     {
-        $configSchema = new ConfigSchema(...$this->nodes);
-
         if (null === $this->parent || null === $this->key) {
             throw new \LogicException(sprintf(
                 'method "%s::buildChildNode()" can not be called outside a child node.',
@@ -81,17 +81,14 @@ class ConfigSchemaBuilder
             ));
         }
 
-        $this->parent->add(new ObjectNode($this->key, $configSchema));
+        $this->parent->add(new ObjectNode($this->key, new NodeListSchema(...$this->nodes)));
 
         return $this->parent;
     }
 
-    /**
-     * @throws InvalidSchemaException
-     */
-    public function build(): ConfigSchema
+    public function build(): NodeListSchema
     {
-        $configSchema = new ConfigSchema(...$this->nodes);
+        $configSchema = new NodeListSchema(...$this->nodes);
 
         if (null !== $this->parent && null !== $this->key) {
             throw new \LogicException(sprintf(

@@ -4,34 +4,41 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\NumericNode;
+use Kaizen\Components\Config\Schema\Validation\Numeric\MaxConstraintValidator;
+use Kaizen\Components\Config\Schema\Validation\Numeric\MinConstraintValidator;
 
-class NumericNodeBuilder
+/**
+ * @extends NodeBuilder<int|float>
+ */
+class NumericNodeBuilder extends NodeBuilder
 {
-    private null|float|int $min = null;
-
-    private null|float|int $max = null;
-
     private null|float|int $defaultValue = null;
 
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $configSchemaBuilder
+        private readonly NodeListSchemaBuilder $configSchemaBuilder
     ) {}
 
-    public function min(float|int $min): self
+    public function min(int|float $value): self
     {
-        $this->min = $min;
+        /** @var MinConstraintValidator<int|float> $minConstraint */
+        $minConstraint = new MinConstraintValidator($value);
+
+        $this->constraints[] = $minConstraint;
 
         return $this;
     }
 
-    public function max(float|int $max): self
+    public function max(int|float $value): self
     {
-        $this->max = $max;
+        /** @var MaxConstraintValidator<int|float> $maxConstraint */
+        $maxConstraint = new MaxConstraintValidator($value);
+
+        $this->constraints[] = $maxConstraint;
 
         return $this;
     }
@@ -50,17 +57,10 @@ class NumericNodeBuilder
         return $this;
     }
 
-    public function buildNode(): ConfigSchemaBuilder
+    public function buildNode(): NodeListSchemaBuilder
     {
         $numericNode = new NumericNode($this->key);
-
-        if (null !== $this->min) {
-            $numericNode->min($this->min);
-        }
-
-        if (null !== $this->max) {
-            $numericNode->max($this->max);
-        }
+        $numericNode->setConstraintValidators($this->constraints);
 
         if (null !== $this->defaultValue) {
             $numericNode->defaultValue($this->defaultValue);

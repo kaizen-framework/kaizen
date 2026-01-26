@@ -4,34 +4,40 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Schema\Node\Builder;
 
-use Kaizen\Components\Config\Schema\ConfigSchemaBuilder;
+use Kaizen\Components\Config\Schema\NodeListSchemaBuilder;
 use Kaizen\Components\Config\Schema\Node\FloatNode;
+use Kaizen\Components\Config\Schema\Validation\Numeric\MaxConstraintValidator;
+use Kaizen\Components\Config\Schema\Validation\Numeric\MinConstraintValidator;
 
-class FloatNodeBuilder
+/**
+ * @extends NodeBuilder<float>
+ */
+class FloatNodeBuilder extends NodeBuilder
 {
-    private ?float $min = null;
-
-    private ?float $max = null;
-
     private ?float $defaultValue = null;
-
     private bool $isRequired = false;
 
     public function __construct(
         private readonly string $key,
-        private readonly ConfigSchemaBuilder $configSchemaBuilder
+        private readonly NodeListSchemaBuilder $configSchemaBuilder
     ) {}
 
-    public function min(float $min): self
+    public function min(float $value): self
     {
-        $this->min = $min;
+        /** @var MinConstraintValidator<float> $minConstraint */
+        $minConstraint = new MinConstraintValidator($value);
+
+        $this->constraints[] = $minConstraint;
 
         return $this;
     }
 
-    public function max(float $max): self
+    public function max(float $value): self
     {
-        $this->max = $max;
+        /** @var MaxConstraintValidator<float> $maxConstraint */
+        $maxConstraint = new MaxConstraintValidator($value);
+
+        $this->constraints[] = $maxConstraint;
 
         return $this;
     }
@@ -50,19 +56,12 @@ class FloatNodeBuilder
         return $this;
     }
 
-    public function buildNode(): ConfigSchemaBuilder
+    public function buildNode(): NodeListSchemaBuilder
     {
         $floatNode = new FloatNode($this->key);
+        $floatNode->setConstraintValidators($this->constraints);
 
-        if (!is_null($this->min)) {
-            $floatNode->min($this->min);
-        }
-
-        if (!is_null($this->max)) {
-            $floatNode->max($this->max);
-        }
-
-        if (!is_null($this->defaultValue)) {
+        if (null !== $this->defaultValue) {
             $floatNode->defaultValue($this->defaultValue);
         }
 

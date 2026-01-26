@@ -4,24 +4,26 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Tests\Schema\Node;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
+use Kaizen\Components\Config\Processor\ValidationContext;
+use Kaizen\Components\Config\Processor\ValueObject\ValidationResult;
+use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Node\BooleanNode;
+use Kaizen\Components\Config\Schema\Node\Node;
 use Kaizen\Components\Config\Schema\Node\ObjectVariableNode;
-use Kaizen\Components\Config\Schema\Prototype\ConfigPrototypeInterface;
+use Kaizen\Components\Config\Schema\Node\StringNode;
+use Kaizen\Components\Config\Schema\Prototype\AbstractPrototype;
+use Kaizen\Components\Config\Schema\Prototype\ObjectPrototype;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(ObjectVariableNode::class)]
-class ObjectVariableNodeTest extends TestCase
+class ObjectVariableNodeTest extends AbstractNodeTester
 {
-    public function testValidate(): void
+    public static function validValueProvider(): \Iterator
     {
-        self::expectNotToPerformAssertions();
-        $objectVariableNode = new ObjectVariableNode('node');
-
-        $objectVariableNode->validateType([
+        yield [[
             'variable' => 'test',
             'int' => 123,
             'bool' => true,
@@ -29,7 +31,39 @@ class ObjectVariableNodeTest extends TestCase
                 'parameter1' => 'test',
                 'parameter2' => 'test2',
             ],
-        ]);
+        ]];
+        yield [[
+            'foo' => 'value',
+            'bar' => 11,
+            'baz' => 1.1,
+            'bool' => true,
+            'array' => ['a', 1],
+            'object' => ['key' => 'value'],
+        ]];
+        yield [[]];
+        yield [null];
+    }
+
+    public static function invalidValueProvider(): \Iterator
+    {
+        yield [true, 'node', 'Expected a list of values, but got bool.'];
+        yield [1, 'node', 'Expected a list of values, but got int.'];
+        yield [1.1, 'node', 'Expected a list of values, but got float.'];
+        yield [[
+            'variable' => 'test',
+            'no keys',
+            'bool' => true,
+            'parameters' => [
+                'parameter1' => 'test',
+                'parameter2' => 'test2',
+            ],
+        ], 'node', 'All children should have a key.'];
+        yield [['a', 1], 'node', 'All children should have a key.'];
+    }
+
+    protected function getNode(): Node
+    {
+        return new ObjectVariableNode('node');
     }
 
     public function testPrototypeValidationIsCalled(): void
@@ -42,38 +76,91 @@ class ObjectVariableNodeTest extends TestCase
             ],
         ];
 
-        $prototypeMock = $this->createMock(ConfigPrototypeInterface::class);
+        $validationContext = new ValidationContext();
+
+        $prototypeValidationResult = new ValidationResult();
+        $prototypeValidationResult->addError('path', 'message');
+
+        $prototypeMock = $this->createMock(AbstractPrototype::class);
         $prototypeMock->expects(self::once())
-            ->method('validatePrototype')
-            ->with($value)
+            ->method('isValueSatisfiesPrototypeSpecification')
+            ->with($value, $validationContext->child('node'))
+            ->willReturn($prototypeValidationResult);
         ;
 
         $objectVariableNode = new ObjectVariableNode('node', $prototypeMock);
 
-        $objectVariableNode->validateType($value);
+        $validationResult = $objectVariableNode->isValueSatisfiesNodeSpecification($value, $validationContext);
+
+        self::assertSame(
+            'path',
+            $validationResult->errors[0]->path
+        );
+        self::assertSame(
+            'message',
+            $validationResult->errors[0]->message
+        );
     }
 
-    public function testWithNotObjectValue(): void
+    public function testNormalization(): void
     {
-        $objectVariableNode = new ObjectVariableNode('node');
+        $node = new ObjectVariableNode('node');
 
-        self::expectException(InvalidNodeTypeException::class);
-        $objectVariableNode->validateType('invalid');
-    }
-
-    public function testWithObjectWithoutKey(): void
-    {
-        $objectVariableNode = new ObjectVariableNode('node');
-
-        self::expectException(InvalidNodeTypeException::class);
-        $objectVariableNode->validateType([
+        $config = [
             'variable' => 'test',
-            'no keys',
-            'bool' => true,
-            'parameters' => [
-                'parameter1' => 'test',
-                'parameter2' => 'test2',
+            'parameters' => [],
+            'boolean' => true,
+        ];
+
+        self::assertEquals($config, $node->normalize($config));
+    }
+
+    public function testNormalizationWithPrototype(): void
+    {
+        /** @var array<string, array<string, mixed>> $config */
+        $config = [
+            'param1' => [
+                'parameters' => [],
+                'boolean' => true,
             ],
-        ]);
+            'param2' => [
+                'variable' => 'test',
+                'parameters' => [],
+            ],
+        ];
+
+        $prototype = $this->createMock(AbstractPrototype::class);
+
+
+        $prototype->expects(self::once())
+            ->method('normalize')
+            ->with($config)
+            ->willReturn([
+                'param1' => [
+                    'parameters' => [],
+                    'boolean' => true,
+                    'default' => 'value',
+                ],
+                'param2' => [
+                    'variable' => 'test',
+                    'parameters' => [],
+                    'default' => 'value',
+                ]
+            ]);
+
+        $node = new ObjectVariableNode('node', $prototype);
+
+        self::assertEquals([
+            'param1' => [
+                'parameters' => [],
+                'boolean' => true,
+                'default' => 'value',
+            ],
+            'param2' => [
+                'variable' => 'test',
+                'parameters' => [],
+                'default' => 'value',
+            ],
+        ], $node->normalize($config));
     }
 }

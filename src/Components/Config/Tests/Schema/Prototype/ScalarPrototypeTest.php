@@ -2,65 +2,33 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\AbstractPrototype;
 use Kaizen\Components\Config\Schema\Prototype\ScalarPrototype;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(ScalarPrototype::class)]
-class ScalarPrototypeTest extends TestCase
+class ScalarPrototypeTest extends AbstractPrototypeTester
 {
-    public function testValidateArray(): void
+    public static function validValueProvider(): \Iterator
     {
-        self::expectNotToPerformAssertions();
-
-        $scalarPrototype = new ScalarPrototype();
-        $scalarPrototype->validatePrototype([123, 12.3, true, 'string']);
+        yield [['string', true, 123, 11.11]];
     }
 
-    public function testValidateWithArrayNode(): void
+    public static function invalidValueProvider(): \Iterator
     {
-        self::expectNotToPerformAssertions();
-
-        $arrayNode = new ArrayNode('node', new ScalarPrototype());
-        $arrayNode->validateType([123, 12.3, true, 'string']);
+        yield [[new \stdClass()], 'test[0]', 'Expected an array of scalar values.'];
+        yield [[[1,2,3]], 'test[0]', 'Expected an array of scalar values.'];
+        yield [[['key' => 'value']], 'test[0]', 'Expected an array of scalar values.'];
+        yield [[null], 'test[0]', 'Expected an array of scalar values.'];
+        yield [[[]], 'test[0]', 'Expected an array of scalar values.'];
+        yield [[1, 'string', true, false, []], 'test[4]', 'Expected an array of scalar values.'];
     }
 
-    public static function invalidScalarArrayValueProvider(): \Iterator
+    protected function getPrototype(): AbstractPrototype
     {
-        yield [[[]]];
-
-        yield [[new \stdClass()]];
-
-        yield [[null]];
-    }
-
-    /**
-     * @param array<int, mixed> $value
-     */
-    #[DataProvider('invalidScalarArrayValueProvider')]
-    public function testScalarException(array $value): void
-    {
-        $scalarPrototype = new ScalarPrototype();
-
-        self::expectException(InvalidNodeTypeException::class);
-        $scalarPrototype->validatePrototype($value);
-    }
-
-    /**
-     * @param array<int, mixed> $value
-     */
-    #[DataProvider('invalidScalarArrayValueProvider')]
-    public function testScalarExceptionWithArrayNode(array $value): void
-    {
-        $scalarArrayNode = new ArrayNode('node', new ScalarPrototype());
-
-        self::expectException(InvalidNodeTypeException::class);
-        $scalarArrayNode->validateType($value);
+        return new ScalarPrototype();
     }
 }

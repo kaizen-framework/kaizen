@@ -2,91 +2,48 @@
 
 namespace Kaizen\Components\Config\Tests\Schema\Prototype;
 
-use Kaizen\Components\Config\Exception\InvalidNodeTypeException;
-use Kaizen\Components\Config\Schema\Node\ArrayNode;
+use Kaizen\Components\Config\Schema\Prototype\AbstractPrototype;
 use Kaizen\Components\Config\Schema\Prototype\TuplePrototype;
 use Kaizen\Components\Config\Schema\Prototype\TupleTypesEnum;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
 #[CoversClass(TuplePrototype::class)]
-class TuplePrototypeTest extends TestCase
+class TuplePrototypeTest extends AbstractPrototypeTester
 {
-    public function testValidateArray(): void
+    public static function validValueProvider(): \Iterator
     {
-        self::expectNotToPerformAssertions();
+        yield [['test', 123, 1.21, false, 'string']];
+        yield [['test2', 12, 10.5, false, 12]];
+        yield [['test2', 12, 10.5, false, 12.12]];
+        yield [['test2', 12, 1e5, true, false]];
+    }
 
-        $tuplePrototype = new TuplePrototype(
+    public static function invalidValueProvider(): \Iterator
+    {
+        yield [[123], 'test[0]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [['test', 123], 'test[1]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [[123, 'test', true], 'test[0]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [[true, 'test', true], 'test[0]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [[12, 23.32, true], 'test[0]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [['test', 123, 11.11, 'not expected'], 'test[3]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [['test', 123.123, false], 'test[1]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [[123, 'string', false], 'test[0]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [['string', false, 123], 'test[1]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [[12, 'test', 10.5, true, false], 'test[0]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+        yield [['test', 10.5, 10, true, false], 'test[1]', 'Expected a tuple array of [string, int, float, bool, scalar].'];
+    }
+
+    protected function getPrototype(): AbstractPrototype
+    {
+        return new TuplePrototype(
             TupleTypesEnum::STRING,
             TupleTypesEnum::INTEGER,
+            TupleTypesEnum::FLOAT,
             TupleTypesEnum::BOOLEAN,
-            TupleTypesEnum::FLOAT,
-            TupleTypesEnum::SCALAR
+            TupleTypesEnum::SCALAR,
         );
-
-        $tuplePrototype->validatePrototype(['string', 123, true, 12.12, 'scalar']);
-    }
-
-    public function testValidateWithArrayNode(): void
-    {
-        self::expectNotToPerformAssertions();
-
-        $arrayNode = new ArrayNode('tuple', new TuplePrototype(
-            TupleTypesEnum::STRING,
-            TupleTypesEnum::INTEGER,
-            TupleTypesEnum::BOOLEAN
-        ));
-
-        $arrayNode->validateType(['string', 123, true]);
-    }
-
-    public static function invalidTupleValueProvider(): \Iterator
-    {
-        yield [[123]];
-
-        yield [['test', 123]];
-
-        yield [['test', 123.123, false]];
-
-        yield [[123, 'test', true]];
-
-        yield [[true, 'test', true]];
-
-        yield [[12, 23.32, true]];
-
-        yield [['test', 123, true, 'other']];
-    }
-
-    /**
-     * @param array<int, mixed> $value
-     */
-    #[DataProvider('invalidTupleValueProvider')]
-    public function testTupleException(array $value): void
-    {
-        $tuplePrototype = new TuplePrototype(
-            TupleTypesEnum::FLOAT,
-            TupleTypesEnum::INTEGER,
-            TupleTypesEnum::BOOLEAN
-        );
-
-        self::expectException(InvalidNodeTypeException::class);
-        $tuplePrototype->validatePrototype($value);
-    }
-
-    #[DataProvider('invalidTupleValueProvider')]
-    public function testTupleExceptionWithArrayNode(mixed $value): void
-    {
-        $arrayNode = new ArrayNode('tuple', new TuplePrototype(
-            TupleTypesEnum::STRING,
-            TupleTypesEnum::INTEGER,
-            TupleTypesEnum::BOOLEAN
-        ));
-
-        self::expectException(InvalidNodeTypeException::class);
-        $arrayNode->validateType($value);
     }
 }
