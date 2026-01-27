@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\Finder\Iterator;
 
-use Iterator;
 use Kaizen\Components\Finder\Utils\RegexHelper;
 
 /**
- * @template-covariant TKey
- * @template-covariant TValue
+ * @template TKey
+ * @template TValue
  *
- * @template-extends \FilterIterator<TKey, TValue, \Iterator<TKey, TValue>>
+ * @extends \FilterIterator<TKey, TValue, \Iterator<TKey, TValue>>
  */
 abstract class FilterIterator extends \FilterIterator
 {

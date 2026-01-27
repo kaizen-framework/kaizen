@@ -66,10 +66,11 @@ class Finder
      * Add rules that files must match, it can be either a glob patter or a regex.
      *
      * example:
-     *
-     * $finder->fileName(['*.php', 'src/**\/\{abc, def}*.php']);
-     * $finder->fileName(['/*\.php$/', '*.php']);
-     * $finder->fileName('file.php');
+     * <code>
+     *  $finder->fileName(['*.php', 'src/**\/\{abc, def}*.php']);
+     *  $finder->fileName(['/*\.php$/', '*.php']);
+     *  $finder->fileName('file.php');
+     * </code>
      *
      * @param string|string[] $filesNames
      */
@@ -111,7 +112,7 @@ class Finder
     }
 
     /**
-     * @return \Iterator<string, \SplFileInfo>
+     * @return \Iterator<string, SplFileInfo>
      */
     public function getIterator(): \Iterator
     {
@@ -119,6 +120,7 @@ class Finder
             throw new \LogicException('You must call one of in() method before iterating over a Finder.');
         }
 
+        /** @var \AppendIterator<string, SplFileInfo, \Iterator<string, SplFileInfo>> $iterator */
         $iterator = new \AppendIterator();
 
         foreach ($this->dirs as $dir) {
