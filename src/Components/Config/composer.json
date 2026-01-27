@@ -24,7 +24,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Kaizen\\Components\\Config\\Tests\\": "Tests/"
+            "Kaizen\\Components\\Config\\Tests\\": "/Tests/"
         }
     }
 }
