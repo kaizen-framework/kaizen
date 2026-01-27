@@ -99,7 +99,7 @@ case "$1" in
   "new")
     new "$@";;
   "merge")
-    echo "TODO";;
+    mergePackages;;
   *)
     help;;
 esac
