@@ -1,0 +1,105 @@
+#!/bin/bash
+
+createPackageJson() {
+  PACKAGE_NAME=$1
+  FILE_PATH=$2
+
+  cat << EOL > "$FILE_PATH"/composer.json
+{
+    "name": "kaizen-framework/$PACKAGE_NAME",
+    "authors": [
+        {
+            "name": "niko-38500",
+            "email": "nicolas.montmayeur@hotmail.fr"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": ">=8.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kaizen\\\\Components\\\\$PACKAGE_NAME\\\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kaizen\\\\Components\\\\$PACKAGE_NAME\\\\Tests\\\\": "/Tests/"
+        }
+    }
+}
+EOL
+}
+
+createGitAttribute() {
+  PACKAGE_PATH=$1
+
+  cat <<- EOL > "$PACKAGE_PATH"/.gitattributes
+/Tests export-ignore
+/.git export-ignore
+EOL
+}
+
+createComponent() {
+  COMPONENT_NAME="$1"
+  CONFIRM_CREATION=1
+
+  if [[ $COMPONENT_NAME == "" ]]; then
+    read -p "Name of the package : " COMPONENT_NAME
+  else
+    read -p "You are about to create the $COMPONENT_NAME component, do you want to process ? (Y/N) : " TEMP_VALIDATE
+
+    if [[ $TEMP_VALIDATE != Y ]] && [[ $TEMP_VALIDATE != y ]]; then
+      CONFIRM_CREATION=0
+    fi
+  fi
+
+  if [[ $CONFIRM_CREATION == 0 ]]; then
+    echo "Aborted"
+
+    exit 0
+  fi
+
+  COMPONENT_PATH=src/Components/"$COMPONENT_NAME"
+
+  mkdir "$COMPONENT_PATH"
+  mkdir "$COMPONENT_PATH/Tests"
+
+  createPackageJson "$COMPONENT_NAME" "$COMPONENT_PATH"
+  createGitAttribute "$COMPONENT_PATH"
+
+  touch "$COMPONENT_PATH"/README.md
+}
+
+
+help() {
+  echo "TODO"
+}
+
+mergePackages() {
+  docker compose exec -T php vendor/bin/monorepo-builder merge
+}
+
+new() {
+  case "$2" in
+    "-c")
+      createComponent "$3";;
+    *)
+      help
+  esac
+}
+
+case "$1" in
+  "new")
+    new "$@";;
+  "merge")
+    echo "TODO";;
+  *)
+    help;;
+esac
