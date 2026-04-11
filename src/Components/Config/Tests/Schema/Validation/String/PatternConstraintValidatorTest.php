@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Kaizen\Components\Config\Tests\Schema\Validation\String;
+
 use Kaizen\Components\Config\Schema\Node\StringNode;
 use Kaizen\Components\Config\Schema\NodeListSchema;
 use Kaizen\Components\Config\Schema\Validation\String\PatternConstraintValidator;

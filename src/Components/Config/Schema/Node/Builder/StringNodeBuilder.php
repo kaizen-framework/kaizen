@@ -50,7 +50,7 @@ class StringNodeBuilder extends NodeBuilder
         return $this;
     }
 
-    public function length(?int $min, ?int $max): self
+    public function length(?int $min = null, ?int $max = null): self
     {
         $this->constraints[] = new LengthConstraintValidator($min, $max);
 

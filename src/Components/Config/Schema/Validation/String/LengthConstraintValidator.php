@@ -18,7 +18,7 @@ readonly class LengthConstraintValidator implements NodeConstraintValidatorInter
         private ?int $maxLength,
     ) {
         if (null === $this->minLength && null === $this->maxLength) {
-            throw new \LogicException('You must provide at least one min and max length');
+            throw new \InvalidArgumentException('You must provide at least one min and max length');
         }
     }
 
