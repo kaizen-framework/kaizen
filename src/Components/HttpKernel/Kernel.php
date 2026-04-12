@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kaizen\Components\HttpKernel;
 
-use Kaizen\Components\Container\Container;
 use Kaizen\Components\Container\ParameterBag\ParameterBag;
+use Kaizen\Components\Container\src\Container;
 use Kaizen\Components\HttpKernel\Constant\EnvironmentType;
 
 class Kernel

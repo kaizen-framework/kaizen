@@ -2,7 +2,7 @@
 
 namespace Kaizen\Components\HttpKernel\Tests;
 
-use Kaizen\Components\Container\Container;
+use Kaizen\Components\Container\src\Container;
 use Kaizen\Components\HttpKernel\Kernel;
 use PHPUnit\Framework\TestCase;
 

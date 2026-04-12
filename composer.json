@@ -11,7 +11,8 @@
     ],
     "require": {
         "ext-yaml": "*",
-        "php": ">=8.5"
+        "php": ">=8.5",
+        "psr/container": "^2.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.92",
@@ -22,6 +23,7 @@
     },
     "replace": {
         "kaizen-framework/config": "self.version",
+        "kaizen-framework/container": "self.version",
         "kaizen-framework/event-dispatcher": "self.version",
         "kaizen-framework/finder": "self.version",
         "kaizen-framework/http-kernel": "self.version"
@@ -30,12 +32,14 @@
         "psr-4": {
             "Kaizen\\": "src",
             "Kaizen\\Components\\Config\\": "src/Components/Config/",
+            "Kaizen\\Components\\Container\\": "src/Components/Container/src/",
             "Kaizen\\Components\\EventDispatcher\\": "src/Components/EventDispatcher/",
             "Kaizen\\Components\\Finder\\": "src/Components/Finder/",
             "Kaizen\\Components\\HttpKernel\\": "src/Components/HttpKernel/"
         },
         "exclude-from-classmap": [
             "src/Components/Config/Tests/",
+            "src/Components/Container/Tests/",
             "src/Components/EventDispatcher/Tests/",
             "src/Components/Finder/Tests/",
             "src/Components/HttpKernel/Tests/"
@@ -44,6 +48,7 @@
     "autoload-dev": {
         "psr-4": {
             "Kaizen\\Components\\Config\\Tests\\": "src/Components/Config/Tests/",
+            "Kaizen\\Components\\Container\\Tests\\": "src/Components/Container/Tests/",
             "Kaizen\\Components\\EventDispatcher\\Tests\\": "src/Components/EventDispatcher/Tests",
             "Kaizen\\Components\\Finder\\Tests\\": "src/Components/Finder/Tests/",
             "Kaizen\\Components\\HttpKernel\\Tests\\": "src/Components/HttpKernel/Tests/"

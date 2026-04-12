@@ -1,12 +1,14 @@
 #!/bin/bash
 
+set -e
+
 createPackageJson() {
   PACKAGE_NAME=$1
   FILE_PATH=$2
 
   cat << EOL > "$FILE_PATH"/composer.json
 {
-    "name": "kaizen-framework/$PACKAGE_NAME",
+    "name": "kaizen-framework/$(echo "$PACKAGE_NAME" | awk '{print tolower($0)}')",
     "authors": [
         {
             "name": "niko-38500",
